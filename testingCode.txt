@@ -1,0 +1,16 @@
+public static final int joystickMotor = 0;
+public static final int buttonMotor = 0;
+
+public static final int joystickAxis = 0;
+
+public static final int buttonNum = 0;
+
+static CANTalon motor;
+
+testInit{
+motor = new CANTalon(joystickMotor);
+}
+
+testPeriodic{
+motor.set(Joystick.getRawAxis(joystickAxis));
+}
