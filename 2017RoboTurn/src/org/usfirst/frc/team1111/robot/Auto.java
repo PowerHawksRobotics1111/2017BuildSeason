@@ -1,58 +1,86 @@
 package org.usfirst.frc.team1111.robot;
 
+import java.lang.Math;
+
+import org.usfirst.frc.team1111.robot.Auto.Movement;
+
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import variables.Dimensions;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import variables.Motors;
 import variables.Sensors;
 import variables.Vision;
-import java.lang.Math;
 //import variables.Sensors;
 //import variables.Sensors.Encoders;
-
- 
 public class Auto 
 {
 	 
 	public static double findTheta(double currentCenterX)
 	{
 		double theta = 0.0;
-		theta = Math.atan((Vision.centerXVision - currentCenterX) / Vision.focalLength);
+		theta = Math.atan((Vision.centerXVision - currentCenterX) / Vision.focalLength)*(180/Math.PI);
 		return theta;
+	}
+	
+	public static double findDistance(double heightOfTarget)
+	{
+		double distance = 0.0;
+		distance = (double)(heightOfTarget / Math.tan(49));
+		return distance;
+	}
+	public static void turnNumDegrees(double angleDifference)
+	{
+		if(angleDifference>Math.abs(.5))
+		{
+			//The motors rotate CCW (viewed from the back) when set to a positive value
+			
+			//If the target is right of the center of the camera view,
+			if(angleDifference>.5)
+			{
+				//Rotate right
+				Motors.motorDriveFrontRight.set(-.75);
+				Motors.motorDriveBackRight.set(-.75);
+				Motors.motorDriveFrontLeft.set(.75);
+				Motors.motorDriveBackLeft.set(.75);
+			}
+			if(angleDifference<-.5)
+			{
+				//Rotate left
+				Motors.motorDriveFrontLeft.set(-.75);
+				Motors.motorDriveBackLeft.set(-.75);
+				Motors.motorDriveFrontRight.set(.75);
+				Motors.motorDriveBackRight.set(.75);
+			}
+		}
 	}
 	public static void autoAlign()
 	{
-		//NetworkTable.setClientMode();
-		//NetworkTable.setIPAddress("roborio-1111-frc.local");
 		NetworkTable VisionTable = NetworkTable.getTable("GRIP/contoursReport");
 		double[] TargetX = VisionTable.getNumberArray("centerX");
 		double[] TargetY = VisionTable.getNumberArray("centerY");
+		SmartDashboard.putNumber("X", TargetX[0]);
+		SmartDashboard.putNumber("Y", TargetY[0]);
+		double degreesToRotate = 0;
+		//TargetX will be a null array if no target is visible.
+		//Trying to execute findTheta with a null array will crash the program.
+		if(TargetX!=null)
+		{
+			degreesToRotate=findTheta(TargetX[0]);
+		}
+		SmartDashboard.putNumber("Degrees to rotate", degreesToRotate);
+		//Turn towards the target using the center values
+		turnNumDegrees(degreesToRotate);
 		
-		System.out.println("X: "+TargetX[0]+" Y: "+TargetY[0]);
+		//this is just for the distance finding method to work
+		double[] Height = VisionTable.getNumberArray("height");
+		double distanceToTower = 0.0;
+		distanceToTower = findDistance(Height[0]);
 		
-		double degreesToRotate = findTheta(TargetX[0]);
-		
-		System.out.println("Degrees to Rotate are: " + degreesToRotate + " degrees.");
-		
-		
-//		if (Sensors.navX.getYaw())
-//		{
-//			0
-//			Encoder.
-//		}
-//		Motors.motorDriveBackLeft.set();
-//		Motors.motorDriveBackRight.set();
-//		Motors.motorDriveFrontLeft.set();
-//		Motors.motorDriveFrontRight.set(outputValue);
+		SmartDashboard.putNumber("Distance to the target", distanceToTower);
 	}
 	
 	
 	static class Movement {
-
-		
-		
-		
 		public static void driveDriveMotors(double power)
 		{
 			Motors.motorDriveBackLeft.set(-power);

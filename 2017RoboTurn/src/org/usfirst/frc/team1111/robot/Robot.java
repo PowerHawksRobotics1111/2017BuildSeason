@@ -112,7 +112,13 @@ public class Robot extends IterativeRobot
 	 */
 	public void autonomousPeriodic()
 	{
-		switch (autoSelected) 
+		
+		Motors.motorDriveBackLeft.set(-.25);
+		Motors.motorDriveBackRight.set(.25);
+		
+		SmartDashboard.putNumber("Left Encoder", Motors.motorDriveBackLeft.getEncPosition());
+		SmartDashboard.putNumber("Right Encoder", Motors.motorDriveBackRight.getEncPosition());
+		/*switch (autoSelected) 
 		{
 		case "reachThenDropArm":
 			Auto.reachThenDropArm();
@@ -145,7 +151,7 @@ public class Robot extends IterativeRobot
 		}
 		
 //		Motors.lightingControlSpike.set(Relay.Value.kOn);
-		
+		*/
 		updateDashboard();
 	}
 	
@@ -187,6 +193,7 @@ public class Robot extends IterativeRobot
 	public void disabledPeriodic()
 	{
 		//		Motors.brake.setAngle(Motors.BRAKE_ANGLE); TODO implement?!?!?
+		Auto.Movement.stopDriveMotors();
 		Motors.motorInnerIntake.set(0.0);
 		Motors.motorOuterIntake.set(0.0);
 		Motors.motorShooter.set(0.0);

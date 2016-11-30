@@ -31,6 +31,7 @@ public class Robot extends IterativeRobot {
         SmartDashboard.putData("Auto choices", chooser);
         
         Motors.motorInit();
+        
     }
     
 	/**
@@ -67,7 +68,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         drive();
-        operator.operate();
+        Operator.operate();
     }
     
     void drive()
@@ -76,10 +77,10 @@ public class Robot extends IterativeRobot {
 		double left = variables.Joysticks.joyDrive.getRawAxis(1);
 
 		Motors.motorDriveFrontLeft.set(left);
-		Motors.motorDriveBackLeft.set(Motors.BACK_WHEEL_DRIVE_RATIO * left);
+		Motors.motorDriveBackLeft.set(left);
 
 		Motors.motorDriveFrontRight.set(-right);
-		Motors.motorDriveBackRight.set(Motors.BACK_WHEEL_DRIVE_RATIO * -right);
+		Motors.motorDriveBackRight.set(-right);
     }
     
     /**
