@@ -14,6 +14,7 @@ public class Motors
 	public static CANTalon motorArm; 
 	public static CANTalon motorInnerIntake, motorOuterIntake, motorShooter, motorTapeArm;
 	public static CANTalon flashlight;
+	public static double wheelCircumfrance = 18.85;
 	
 //	public static Servo brake;
 	public static Servo hardBallStop;

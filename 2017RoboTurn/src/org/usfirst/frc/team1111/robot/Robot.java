@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1111.robot;
 
+import variables.Joysticks;
 import variables.Motors;
 import variables.Sensors;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -27,6 +28,8 @@ public class Robot extends IterativeRobot
 	SendableChooser chooser;
 
 	Double startTime = 0.0;
+	
+	double rumble = 0;
 	
 	public static Timer timer = new Timer();
 
@@ -89,6 +92,14 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putNumber("Left Ultra", Sensors.leftUltra.getRangeInches());
 		
 		SmartDashboard.putNumber("NavX Yaw", Sensors.navX.getYaw());
+		
+		if(rumble == 0)
+			rumble = 100;
+		else
+			rumble-=2;
+		Joysticks.joyDrive.setRumble(edu.wpi.first.wpilibj.Joystick.RumbleType.kLeftRumble, (float) (rumble/100.0));
+		Joysticks.joyDrive.setRumble(edu.wpi.first.wpilibj.Joystick.RumbleType.kRightRumble, (float) (rumble/100.0));
+
 	}
 
 	/**
@@ -158,6 +169,7 @@ public class Robot extends IterativeRobot
 	public void teleopInit()
 	{
 		Motors.motorArm.enableBrakeMode(true);
+		Auto.retrievedImage = false;
 	}
 
 	/**
@@ -168,7 +180,7 @@ public class Robot extends IterativeRobot
 		if(!Motors.motorArm.getBrakeEnableDuringNeutral())
 			Motors.motorArm.enableBrakeMode(true);
 		drive();
-		Operate.operate();
+		//Operate.operate();
 		Auto.autoAlign();
 
 //		Motors.lightingControlSpike.set(Relay.Value.kOn);

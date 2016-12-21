@@ -17,7 +17,6 @@ public class Sensors
 	public static final DigitalInput intakeLimitSwitch2 = new DigitalInput(LS2_PORT);
 	
 	public static final Ultrasonic leftUltra = new Ultrasonic(2,3), rightUltra = new Ultrasonic(4,5);
-	
 	public static void initUltras()
 	{
 		leftUltra.setEnabled(true);
