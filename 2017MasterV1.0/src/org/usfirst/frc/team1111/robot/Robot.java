@@ -68,7 +68,7 @@ public class Robot extends IterativeRobot
      */
     public void teleopPeriodic() 
     {
-    	drive();
+    	drive(Joysticks.joyDrive.getRawAxis(1),Joysticks.joyDrive.getRawAxis(3));
     	Operator.operate();
     }
     
