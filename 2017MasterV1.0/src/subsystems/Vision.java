@@ -43,8 +43,8 @@ class Vision
 	
 	public static void turnNumDegrees(double angleDifference)
 	{
-		if(Math.abs(angleDifference)>1)
-		{
+		//if(Math.abs(angleDifference)>1)  //Since you are checking positive and negative, you dont need to check them again.
+		//{
 			//The motors rotate CCW (viewed from the back) when set to a positive value
 			
 			//If the target is right of the center of the camera view,
@@ -64,7 +64,7 @@ class Vision
 				Motors.motorDriveFrontRight.set(-.2);
 				Motors.motorDriveBackRight.set(-.2);
 			}
-		}
+		//}
 		else
 		{
 			//Stop when at the target
@@ -77,8 +77,8 @@ class Vision
 	public static void turnToTarget(double targetAngle)
 	{
 		double angleDelta = targetAngle-Sensors.navX.getYaw();
-		if(Math.abs(angleDelta)>2)
-		{
+		//if(Math.abs(angleDelta)>2)
+		//{
 			//The motors rotate CCW (viewed from the back) when set to a positive value
 			
 			//If the target is right of the center of the camera view,
@@ -98,7 +98,7 @@ class Vision
 				Motors.motorDriveFrontRight.set(.25);
 				Motors.motorDriveBackRight.set(.25);
 			}
-		}
+		//}
 		else
 		{
 			//Stop when at the target
@@ -125,7 +125,7 @@ class Vision
 			}
 			catch(Exception E)
 			{
-				SmartDashboard.putString("Vision status", "Could not retrieve image!");
+				SmartDashboard.putString("Vision status", "Could not retrieve image!");//Is this used elsewhere? Otherwise, maybe outputting to the log would be better, so we dont have too much on the dashboard.
 				return;
 			}
 			degreesToRotate = findThetaX((TargetX[0] +TargetX[1])/2);
