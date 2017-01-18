@@ -2,107 +2,79 @@ package subsystems;
 
 import variables.Motors;
 import variables.Sensors;
-import com.kauailabs.navx.frc.AHRS;
 
 //Tank drive
-public class Drivetrain 
+public class Drivetrain
 {
+	
 	public static void drive(double left, double right)
 	{
-		Motors.motorDriveFrontRight.set(right);
-		Motors.motorDriveFrontLeft.set(-left);
-		Motors.motorDriveBackRight.set(right);
-		Motors.motorDriveBackLeft.set(-left);	
+		Motors.motorDriveRight1.set(right);
+		Motors.motorDriveLeft1.set( -left);
+		Motors.motorDriveRight2.set(right);
+		Motors.motorDriveLeft2.set( -left);
 	}
 	
 	public static void rotateCW(double power)
 	{
-		Motors.motorDriveFrontRight.set(-power);
-		Motors.motorDriveFrontLeft.set(-power);
-		Motors.motorDriveBackRight.set(-power);
-		Motors.motorDriveBackLeft.set(-power);
+		Motors.motorDriveRight1.set( -power);
+		Motors.motorDriveLeft1.set( -power);
+		Motors.motorDriveRight2.set( -power);
+		Motors.motorDriveLeft2.set( -power);
 	}
 	
 	public static void rotateCCW(double power)
 	{
-		Motors.motorDriveFrontRight.set(power);
-		Motors.motorDriveFrontLeft.set(power);
-		Motors.motorDriveBackRight.set(power);
-		Motors.motorDriveBackLeft.set(power);
+		Motors.motorDriveRight1.set(power);
+		Motors.motorDriveLeft1.set(power);
+		Motors.motorDriveRight2.set(power);
+		Motors.motorDriveLeft2.set(power);
 	}
 	
-	public static void moveForward(double power)
-	{
-		Motors.motorDriveBackLeft.set(-power);
-		Motors.motorDriveBackRight.set(power);
-		Motors.motorDriveFrontLeft.set(-power);
-		Motors.motorDriveFrontRight.set(power);
-	}
-	
-	public static void stopMoving()
-	{
-		Motors.motorDriveFrontRight.set(Motors.NO_POWER);
-		Motors.motorDriveFrontLeft.set(Motors.NO_POWER);
-		Motors.motorDriveBackRight.set(Motors.NO_POWER);
-		Motors.motorDriveBackLeft.set(Motors.NO_POWER);
-	}
-	
-	//Both of these use potentially problematic while loops
+	// Both of these use potentially problematic while loops
 	/*
-	public static void turnCWNumDegrees(double degrees)
-	{
-		double currentAngle = Sensors.navx.getYaw(); //To be implemented
-		double targetAngle = (currentAngle+degrees)%360;
-		while(currentAngle!=targetAngle)
-		{
-			double currentAngle = Sensors.navx.getYaw();
-			rotateCW(Motors.QUARTER_POWER);
-		}
-	}*/
+	 * public static void turnCWNumDegrees(double degrees) { double currentAngle
+	 * = Sensors.navx.getYaw(); //To be implemented double targetAngle =
+	 * (currentAngle+degrees)%360; while(currentAngle!=targetAngle) { double
+	 * currentAngle = Sensors.navx.getYaw(); rotateCW(.25); } }
+	 */
 	
 	/*
-	public static void turnCCWNumDegrees(double degrees)
-	{
-		double currentAngle = Sensors.navx.getYaw(); //To be implemented
-		double targetAngle = (currentAngle+degrees)%360;
-		while(currentAngle!=targetAngle)
-		{
-			double currentAngle = Sensors.navx.getYaw();
-			rotateCCW(Motors.QUARTER_POWER);
-		}
-	}*/
+	 * public static void turnCCWNumDegrees(double degrees) { double
+	 * currentAngle = Sensors.navx.getYaw(); //To be implemented double
+	 * targetAngle = (currentAngle+degrees)%360;
+	 * while(currentAngle!=targetAngle) { double currentAngle =
+	 * Sensors.navx.getYaw(); rotateCCW(.25); } }
+	 */
 	
 	public static void turnToAngle(double targetAngle)
 	{
-		double angleDelta = targetAngle-Sensors.navX.getYaw();
-		if(Math.abs(angleDelta)>5)
+		double angleDelta = targetAngle - Sensors.navX.getYaw();
+		if (Math.abs(angleDelta) > 5)
 		{
-			if((Sensors.navX.getYaw+180)%360>targetAngle)
+			if ((Sensors.navX.getYaw() + 180) % 360 > targetAngle)
 			{
-				rotateCW(Motors.QUARTER_POWER);
+				rotateCW(Motors.AUTO_ALIGN_POWER);
 			}
-			if((Sensors.navX.getYaw+180)%360<targetAngle)
+			if ((Sensors.navX.getYaw() + 180) % 360 < targetAngle)
 			{
-				rotateCCW(Motors.QUARTER_POWER);
+				rotateCCW(Motors.AUTO_ALIGN_POWER);
 			}
-		}
-		else
+		} else
 		{
-			stopMoving();
+			drive(0, 0);
 		}
 	}
 	
 	public static void moveToDistance(double targetDistance)
 	{
-		double distanceDelta = targetDistance-Motors.motorDriveBackLeft.getDistance();
-		if(distanceDelta>0)
+		double distanceDelta = targetDistance - Motors.motorDriveLeft2.getEncPosition();
+		if (distanceDelta > 0)
 		{
-			moveForward(Motors.HALF_POWER);
-		}
-		else
+			drive(.5, .5);
+		} else
 		{
-			stopMoving();
+			drive(0, 0);
 		}
 	}
 }
-
