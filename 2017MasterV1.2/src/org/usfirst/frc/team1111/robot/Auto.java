@@ -23,18 +23,39 @@ public class Auto
 	static double targetRetreatDistance = 0;
 	static double targetAlignChangeDistance = 0;
 	static double boilerToAlliance = 0; // NOT a dimension
+	static double targetBarrierDistance = 0;
+	
+	static double startTime = -1;
 	
 	// These are the steps for the peg methods
 	public static boolean findValues = false, moveAlignDist = false, turnAngle = false, visionAlign = false,
-			findPegDist = false, movePegDist = false;
+			findPegDist = false, movePegDist = false, placeGear = false, waitToSettle = false;
 	
 	// These are the steps for the boiler methods
 	public static boolean findBoilerValues = false, moveBoilerAlignDist = false, turnBoilerAngle = false,
 			boilerVisionAlign = false, findBoilerDist = false, moveBoilerDist = false, shootHigh = false;
 	
 	// These are the steps for the reach methods
-	public static boolean doPegSide = false, waitForRetrieval = false, calculateValues = false, moveAway = false,
-			turnToAlliance = false, moveToBoilerLine = false;
+	public static boolean doPegSide = false, calculateValues = false, moveAway = false, turnToAlliance = false,
+			moveToBoilerLine = false, turnToBarrier = false, moveToDump;
+	
+	// ----------------MISCELLANIOUS METHODS----------------
+	
+	// TODO Dropping the gear
+	public static void dropGear()
+	{
+		if (Motors.gearHold1.getAngle() == 0)
+		{
+			Motors.gearHold1.setAngle(Motors.gearStopdownAngle);
+			Motors.gearHold2.setAngle(180 - Motors.gearStopdownAngle);
+		}
+	}
+	
+	// TODO Shooting automatically
+	public static void shootFuel()
+	{
+		
+	}
 	
 	// ----------------THRESHOLD METHODS----------------
 	
@@ -57,6 +78,12 @@ public class Auto
 			double distanceDelta = targetMovementDist - Motors.motorDriveLeft2.getEncPosition();
 			if (distanceDelta < 0)
 				movePegDist = true;
+		}
+		
+		// TODO Make method to automatically drop gear on peg when called
+		if (movePegDist && !placeGear)
+		{
+			dropGear();
 		}
 	}
 	
@@ -136,7 +163,24 @@ public class Auto
 				movePegDist = true;
 		}
 		
-		if (movePegDist)
+		// TODO Make method to automatically drop gear on peg when called
+		if (movePegDist && !placeGear)
+		{
+			dropGear();
+		}
+		
+		if (placeGear && !waitToSettle)
+		{
+			if (startTime == -1)
+				startTime = Timer.getMatchTime();
+			
+			if (Math.abs(startTime - Timer.getMatchTime()) >= 1.5)
+			{
+				waitToSettle = true;
+			}
+		}
+		
+		if (placeGear)
 		{
 			doPegSide = true;
 		}
@@ -209,8 +253,6 @@ public class Auto
 	
 	// ----------------REACH METHODS----------------
 	
-	static double startTime = -1;
-	
 	public static void pegAndBoiler(double distFromCorner)
 	{
 		// do pegLeft
@@ -219,28 +261,28 @@ public class Auto
 			pegSide(distFromCorner, true);
 		} // doPegSide is set to true at the end of pegSide
 		
-		if (doPegSide && !waitForRetrieval)
-		{
-			if (startTime == -1)
-				startTime = Timer.getMatchTime();
-			
-			if (Math.abs(startTime - Timer.getMatchTime()) >= 5.0)
-			{
-				waitForRetrieval = true;
-			}
-			
-		}
+		// This only applies for a passive gear system
+		// if (doPegSide && !waitForRetrieval)
+		// {
+		// if (startTime == -1) startTime =
+		// Timer.getMatchTime();
+		//
+		// if (Math.abs(startTime - Timer.getMatchTime()) >= 5.0)
+		// {
+		// waitForRetrieval = true;
+		// }
+		// }
 		
 		// calculate values (distances)
-		if (waitForRetrieval && !calculateValues)
+		if (doPegSide && !calculateValues)
 		{
 			double retreatDistance = 50;
 			targetRetreatDistance = Motors.motorDriveLeft2.getEncPosition()
 					- (retreatDistance * Sensors.INCHES_TO_DRIVE_ENCODER);
 			
 			double distFromAllianceWall = (Dimensions.PEGBASE_ALLIANCEWALL_TRIANGLE_HYPOTENUSE - retreatDistance)
-					* Math.sin(Math.PI / 3);
-			double distFromBarrier = retreatDistance * Math.cos(Math.PI / 6);
+					* Math.cos(Math.PI / 3);
+			double distFromBarrier = Dimensions.PEGBASE_TO_BARRIER - (retreatDistance * Math.cos(Math.PI / 6));
 			boilerToAlliance = distFromBarrier / (Math.cos(43.75 * (Math.PI / 180)));
 			double distToBoilerLine = distFromAllianceWall - boilerToAlliance;
 			targetAlignChangeDistance = Motors.motorDriveLeft2.getEncPosition()
@@ -334,9 +376,62 @@ public class Auto
 			pegSide(distFromCorner, true);
 		} // doPegSide is set to true at the end of pegSide
 		
+		// This only applies for a passive gear system
+		// if (doPegSide && !waitForRetrieval)
+		// {
+		// if (startTime == -1) startTime =
+		// Timer.getMatchTime();
+		//
+		// if (Math.abs(startTime - Timer.getMatchTime()) >= 5.0)
+		// {
+		// waitForRetrieval = true;
+		// }
+		// }
+		
+		if (doPegSide && !calculateValues)
+		{
+			double retreatDistance = Dimensions.HOOK_LENGTH * 2;
+			targetRetreatDistance = Motors.motorDriveLeft2.getEncPosition()
+					- (retreatDistance * Sensors.INCHES_TO_DRIVE_ENCODER);
+			
+			double distFromBarrier = Dimensions.PEGBASE_TO_BARRIER - (retreatDistance * Math.cos(Math.PI / 6))
+					- (Dimensions.ROBOT_LENGTH / 4);
+			targetBarrierDistance = Motors.motorDriveLeft2.getEncPosition()
+					+ (distFromBarrier * Sensors.INCHES_TO_DRIVE_ENCODER);
+			
+			degreesToRotate = 150;
+			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
+			
+			calculateValues = true;
+		}
+		
 		// move off the airship
+		if ( !moveAway)
+		{
+			Drivetrain.moveToDistance(targetRetreatDistance);
+			double distanceDelta = targetRetreatDistance - Motors.motorDriveLeft2.getEncPosition();
+			if (distanceDelta < 0)
+				moveAway = true;
+		}
+		
 		// turn towards the hopper
+		if (moveAway && !turnToBarrier)
+		{
+			Drivetrain.turnToAngle(targetAngle);
+			double angleDelta = targetAngle - Sensors.navX.getYaw();
+			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			if (Math.abs(angleDelta) < 5)
+				turnToBarrier = true;
+		}
+		
 		// CHARGE
+		if (turnToBarrier && !moveToDump)
+		{
+			Drivetrain.moveToDistance(targetBarrierDistance);
+			double distanceDelta = targetBarrierDistance - Motors.motorDriveLeft2.getEncPosition();
+			if (distanceDelta < 0)
+				moveToDump = true;
+		}
 	}
 	
 }
