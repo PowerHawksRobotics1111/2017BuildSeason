@@ -2,6 +2,9 @@ package org.usfirst.frc.team1111.robot;
 
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -41,6 +44,11 @@ public class Robot extends IterativeRobot
 	@Override
 	public void robotInit()
 	{
+		
+		CameraServer.getInstance().startAutomaticCapture(0);
+		CameraServer.getInstance().startAutomaticCapture("cam0", "/dev/video0");
+
+
 		chooser = new SendableChooser();
 		
 		chooser.addObject(base, base);
@@ -62,14 +70,13 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putData("Auto Selection", chooser);
 		
 		// Makes the box for custom distance auto methods
-		SmartDashboard.putNumber("Custom Distance from Corner (Inches)", 0.0);
+		//SmartDashboard.putNumber("Custom Distance from Corner (Inches)", 0.0);
 		
 		updateDashboard();
 		Sensors.sensorsInit();
 		Motors.motorInit();
 		
-		isRed = false;
-		// (m_ds.getAlliance() == Alliance.Red);
+		isRed =(m_ds.getAlliance() == Alliance.Red);
 		
 		Motors.motorDriveLeft1.setEncPosition(0);
 		Motors.motorDriveRight1.setEncPosition(0);
@@ -85,7 +92,7 @@ public class Robot extends IterativeRobot
 	{
 		SmartDashboard.putBoolean("Gear Released?", gearReleased);
 		
-		// SmartDashboard.putNumber("Shooter Speed",
+		// //SmartDashboard.putNumber("Shooter Speed",
 		// Motors.motorShooter.getEncVelocity());
 		// SmartDashboard.putBoolean("Shooter",
 		// Motors.motorShooter.getEncVelocity() >= Motors.shooterSpeed);
@@ -124,11 +131,11 @@ public class Robot extends IterativeRobot
 		
 		Motors.fuelStop.setAngle(Motors.fuelCloseAngle);
 		
-		Motors.lightRing1.changeControlMode(TalonControlMode.Voltage);
-		Motors.lightRing2.changeControlMode(TalonControlMode.Voltage);
+//		Motors.lightRing1.changeControlMode(TalonControlMode.Voltage);
+//		Motors.lightRing2.changeControlMode(TalonControlMode.Voltage);
 
-		Sensors.LEDRelay1.set(Relay.Value.kOn);
-		Sensors.LEDRelay2.set(Relay.Value.kOn);
+//		Sensors.LEDRelay1.set(Relay.Value.kOn);
+//		Sensors.LEDRelay2.set(Relay.Value.kOn);
 		Sensors.navX.reset();
 		Sensors.navX.zeroYaw();
 	}
@@ -139,10 +146,11 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic()
 	{
-		SmartDashboard.putNumber("NavX Yaw (SIDEPEG TESTING)", Sensors.navX.getYaw());
+		//SmartDashboard.putNumber("NavX Yaw (SIDEPEG TESTING)", Sensors.navX.getYaw());
 		boolean keyzoneStart = true;
 		autoSelected = (String) chooser.getSelected();
 		// System.out.println(autoSelected); TODO uncomment in final
+		SmartDashboard.putNumber("Encoder Testing", Motors.motorDriveLeft1.getPosition());
 		switch (autoSelected)
 		{
 		default:
@@ -153,7 +161,7 @@ public class Robot extends IterativeRobot
 					- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 							+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
 			if (distanceDelta > 0)
-				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, Motors.AUTO_ALIGN_POWER);
+				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
 			else
 				Drivetrain.drive(0, 0);
 			break;
@@ -165,7 +173,7 @@ public class Robot extends IterativeRobot
 					- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 							+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
 			if (distanceDeltaB > 0)
-				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, Motors.AUTO_ALIGN_POWER);
+				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
 			else
 				Drivetrain.drive(0, 0);
 			break;
@@ -225,8 +233,8 @@ public class Robot extends IterativeRobot
 		
 		Sensors.LEDRelay1.set(Relay.Value.kOn);
 		
-		Motors.lightRing1.set(0);
-		Motors.lightRing2.set(0);
+//		Motors.lightRing1.set(0);
+//		Motors.lightRing2.set(0);
 	}
 	
 	/**
@@ -244,12 +252,11 @@ public class Robot extends IterativeRobot
 		// System.out.println("Mark! You can't go sideways...");
 		Operator.operate();
 		updateDashboard();
-		SmartDashboard.putNumber("Left Encoder", Motors.motorDriveLeft1.getEncPosition());
-		SmartDashboard.putNumber("Right Encoder", Motors.motorDriveRight1.getEncPosition());
-		SmartDashboard.putNumber("Encoder average", ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-				+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0));
+		//SmartDashboard.putNumber("Left Encoder", Motors.motorDriveLeft1.getEncPosition());
+		//SmartDashboard.putNumber("Right Encoder", Motors.motorDriveRight1.getEncPosition());
+		//SmartDashboard.putNumber("Encoder average", ((Math.abs(Motors.motorDriveLeft1.getEncPosition()) + Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0));
 		
-		SmartDashboard.putNumber("NavX Yaw", Sensors.navX.getYaw());
+		//SmartDashboard.putNumber("NavX Yaw", Sensors.navX.getYaw());
 	}
 	
 	/**
@@ -259,6 +266,21 @@ public class Robot extends IterativeRobot
 	public void testPeriodic()
 	{
 		
+	}
+	
+	public void disabledInit()
+	{
+		Motors.motorDriveLeft1.enableBrakeMode(true);
+		Motors.motorDriveLeft2.enableBrakeMode(true);
+		Motors.motorDriveRight1.enableBrakeMode(true);
+		Motors.motorDriveRight2.enableBrakeMode(true);
+		Drivetrain.drive(0, 0);
+		Motors.motorHang.set(0.0);
+		Motors.motorIntake.set(0.0);
+		Motors.motorLowShooter.set(0.0);
+		Motors.motorTopShooter.set(0.0);
+		Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
+		Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 	@Override
@@ -273,6 +295,8 @@ public class Robot extends IterativeRobot
 		Motors.motorIntake.set(0.0);
 		Motors.motorLowShooter.set(0.0);
 		Motors.motorTopShooter.set(0.0);
+		Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
+		Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
 	}
 	
 }

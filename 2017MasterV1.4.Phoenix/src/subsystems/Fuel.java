@@ -25,8 +25,8 @@ public class Fuel
 	
 	public static void autoShoot()
 	{
-		Motors.motorTopShooter.set(Motors.shooterVoltage);
-		Motors.motorLowShooter.set(Motors.shooterVoltage);
+		Motors.motorTopShooter.set(-Motors.shooterVoltage);
+		Motors.motorLowShooter.set(-Motors.shooterVoltage);
 		Motors.motorAgitator.set(Motors.agitationPower);
 	}
 	

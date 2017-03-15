@@ -33,17 +33,17 @@ public class Drivetrain
 	public static void rotateCW(double power)
 	{
 		Motors.motorDriveRight1.set( -power);
-		Motors.motorDriveLeft1.set( -power);
+		Motors.motorDriveLeft1.set( power);
 		Motors.motorDriveRight2.set( -power);
-		Motors.motorDriveLeft2.set( -power);
+		Motors.motorDriveLeft2.set( power);
 	}
 	
 	public static void rotateCCW(double power)
 	{
 		Motors.motorDriveRight1.set(power);
-		Motors.motorDriveLeft1.set(power);
+		Motors.motorDriveLeft1.set(-power);
 		Motors.motorDriveRight2.set(power);
-		Motors.motorDriveLeft2.set(power);
+		Motors.motorDriveLeft2.set(-power);
 	}
 	
 	// TODO test

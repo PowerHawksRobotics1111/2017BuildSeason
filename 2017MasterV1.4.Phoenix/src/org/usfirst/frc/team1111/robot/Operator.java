@@ -64,7 +64,9 @@ public class Operator
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.hang))
 			hanging = true;
-		if (Joysticks.joyOp.getRawButton(Joysticks.X))
+		if(Joysticks.joyOp.getPOV() == 270) //270 is left
+			Motors.motorHang.set(Motors.hangPower);
+		else if (Joysticks.joyOp.getRawButton(Joysticks.X))
 			Motors.motorHang.set(.3);
 		else if ( !hanging)
 			Motors.motorHang.set(0);
@@ -83,14 +85,27 @@ public class Operator
 		}
 	}
 	
+	static double startShootTime = -1.0;
 	static void shoot()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.shootButton))
 		{
-			Motors.fuelStop.setAngle(Motors.fuelOpenAngle);
-			Motors.motorAgitator.set(Motors.agitationPower);
-			Motors.motorTopShooter.set( -Motors.shooterVoltage);
-			Motors.motorLowShooter.set( -Motors.shooterVoltage);
+			if(startShootTime <0)
+				startShootTime = Timer.getMatchTime();
+			
+			if(Math.abs(startShootTime - Timer.getMatchTime()) <.5)
+			{
+				Motors.motorTopShooter.set( -Motors.shooterVoltage);
+				Motors.motorLowShooter.set( -Motors.shooterVoltage);
+				Motors.fuelStop.setAngle(Motors.fuelCloseAngle);
+			}else
+			{
+				Motors.motorTopShooter.set( -Motors.shooterVoltage);
+				Motors.motorLowShooter.set( -Motors.shooterVoltage);
+				Motors.fuelStop.setAngle(Motors.fuelOpenAngle);
+				Motors.motorAgitator.set(Motors.agitationPower);
+			}
+			
 			// Motors.sh
 		} else
 		{
@@ -98,6 +113,7 @@ public class Operator
 			Motors.motorAgitator.set(0.0);
 			Motors.motorTopShooter.set(0.0);
 			Motors.motorLowShooter.set(0.0);
+			startShootTime = -1.0;
 			
 		}
 	}

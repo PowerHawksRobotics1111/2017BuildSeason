@@ -11,8 +11,8 @@ public class Motors
 	
 	public static CANTalon motorDriveRight1, motorDriveLeft1, motorDriveRight2, motorDriveLeft2;
 	
-	public static CANTalon motorAgitator, motorTopShooter, motorLowShooter, motorIntake, motorHang, lightRing1,
-			lightRing2;
+	public static CANTalon motorAgitator, motorTopShooter, motorLowShooter, motorIntake, motorHang;//, lightRing1,
+//			lightRing2;
 	
 	public static Servo gearHold1, gearHold2, fuelStop;
 	
@@ -31,8 +31,8 @@ public class Motors
 	public static final double shooterVoltage = 12.5 * .73, agitationPower = 1, intakePower = -1, outtakePower = 1,
 			hangPower = 1, hangStopCurrent = 85;
 	
-	public static final double fuelOpenAngle = 112.0;
-	public static final double fuelCloseAngle = 180.0;
+	public static final double fuelOpenAngle = 120;//120
+	public static final double fuelCloseAngle = 31;//61
 	
 	public static final double lGearStopdownAngle = 17.6;// 10 p
 															// //17.6
@@ -83,10 +83,9 @@ public class Motors
 		
 		fuelStop = new Servo(2);
 		
-		pushPiston1 = new  DoubleSolenoid(1,2);
-		pushPiston2 = new DoubleSolenoid(3,4);
-		
-		lightRing1 = new CANTalon(LIGHT_RING1);
-		lightRing2 = new CANTalon(LIGHT_RING2);
+		pushPiston1 = new  DoubleSolenoid(0,1);
+		pushPiston2 = new DoubleSolenoid(2,3);		
+//		lightRing1 = new CANTalon(LIGHT_RING1);
+//		lightRing2 = new CANTalon(LIGHT_RING2);
 	}
 }

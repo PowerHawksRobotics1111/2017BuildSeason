@@ -15,7 +15,7 @@ public class Auto
 {
 	
 	// Auto-specific constants
-	static double EncoderDistanceThreshold = 3000.0;
+	static double EncoderDistanceThreshold = 10000.0; //3000
 	static double AngleThreshold = 2;
 	
 	// Auto Process variables
@@ -64,24 +64,27 @@ public class Auto
 	// Drop the gear
 	public static void dropGear()
 	{
-		if (timer.get() == 0)
-		{
-			Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
-			Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
+//		if (timer.get() == 0)
+//		{
+			Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+			Motors.gearHold1.set(Motors.lGearDropdownAngle);
+			Motors.gearHold2.set(Motors.rGearDropdownAngle);
+			Timer.delay(1.5);
 			Motors.pushPiston1.set(DoubleSolenoid.Value.kForward);
 			Motors.pushPiston2.set(DoubleSolenoid.Value.kForward);
-			timer.start();
-		}
-		if (timer.get()>= .5)
-		{
-			Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
-			Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
-			Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
-			Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
-			Robot.gearReleased = false;
-			timer.reset();
-			timer.stop();
-		}
+			Timer.delay(1);
+//			timer.start();
+//		}
+//		if (timer.get()>= .5)
+//		{
+//			Motors.gearHold1.set(Motors.lGearStopdownAngle);
+//			Motors.gearHold2.set(Motors.rGearStopdownAngle);
+//			Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
+//			Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
+//			Robot.gearReleased = false;
+//			timer.reset();
+//			timer.stop();
+//		}
 	}
 	
 	// ----------------THRESHOLD METHODS----------------
@@ -101,8 +104,8 @@ public class Auto
 		
 		if ( !movePegDist)
 		{
-			Motors.gearHold1.setAngle(Motors.lGearPrimeAngle);
-			Motors.gearHold2.setAngle(Motors.rGearPrimeAngle);
+//			Motors.gearHold1.set(Motors.lGearPrimeAngle);
+//			Motors.gearHold2.set(Motors.rGearPrimeAngle);
 			
 			Drivetrain.moveToDistance(targetMovementDist);
 			SmartDashboard.putDouble("Left Enc", Motors.motorDriveLeft1.getEncPosition());
@@ -111,7 +114,7 @@ public class Auto
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0));
 			double distanceDelta = targetMovementDist + ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			SmartDashboard.putNumber("distance delta", distanceDelta);
+			//SmartDashboard.putNumber("distance delta", distanceDelta);
 			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
 			{
 				Drivetrain.drive(0, 0);
@@ -128,6 +131,7 @@ public class Auto
 			dropGear();
 			if (Motors.gearHold1.getAngle() >= Motors.lGearDropdownAngle)
 			{
+				
 				Timer.delay(2);
 				timer.reset();
 				placeGear = true;
@@ -246,9 +250,9 @@ public class Auto
 			else
 				degreesToRotate = -117;
 			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
-			SmartDashboard.putNumber("lineUpWithPegDist", lineUpWithPegDist);
-			SmartDashboard.putNumber("Target angle (find values)", targetAngle);
-			SmartDashboard.putNumber("TargetLineUp (find values)", targetLineUpDist);
+			//SmartDashboard.putNumber("lineUpWithPegDist", lineUpWithPegDist);
+			//SmartDashboard.putNumber("Target angle (find values)", targetAngle);
+			//SmartDashboard.putNumber("TargetLineUp (find values)", targetLineUpDist);
 			findValues = true;
 		}
 		
@@ -260,8 +264,8 @@ public class Auto
 			double distanceDelta = targetLineUpDist - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
 			System.out.println(distanceDelta);
-			SmartDashboard.putNumber("Distance delta (moveAlignDist)", distanceDelta);
-			SmartDashboard.putNumber("DistanceDelta (in)", distanceDelta / Sensors.INCHES_TO_DRIVE_ENCODER_LEFT);
+			//SmartDashboard.putNumber("Distance delta (moveAlignDist)", distanceDelta);
+			//SmartDashboard.putNumber("DistanceDelta (in)", distanceDelta / Sensors.INCHES_TO_DRIVE_ENCODER_LEFT);
 			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
 			{
 				moveAlignDist = true;
@@ -276,8 +280,8 @@ public class Auto
 			
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("NavX Yaw (turnAngle)", Sensors.navX.getYaw());
-			SmartDashboard.putNumber("Remaining degrees (turnAngle)", angleDelta);
+			//SmartDashboard.putNumber("NavX Yaw (turnAngle)", Sensors.navX.getYaw());
+			//SmartDashboard.putNumber("Remaining degrees (turnAngle)", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 			{
 				turnAngle = true;
@@ -311,8 +315,8 @@ public class Auto
 			Motors.motorDriveRight1.reset();
 			Motors.motorDriveLeft1.reset();
 			Timer.delay(1);
-			SmartDashboard.putNumber("Motor Enc (findPegDist)", Motors.motorDriveLeft1.getEncPosition());
-			SmartDashboard.putNumber("Motors Right (findPegDist)", Motors.motorDriveRight1.getEncPosition());
+			//SmartDashboard.putNumber("Motor Enc (findPegDist)", Motors.motorDriveLeft1.getEncPosition());
+			//SmartDashboard.putNumber("Motors Right (findPegDist)", Motors.motorDriveRight1.getEncPosition());
 			distToPeg = (lineUpWithPegDist / (Math.cos(Math.PI / 3.0))) - (Dimensions.ROBOT_LENGTH / 2)
 					- (Dimensions.HOOK_LENGTH / 2);
 			distToPeg = -distToPeg;
@@ -320,18 +324,18 @@ public class Auto
 					+ (7 * Sensors.INCHES_TO_DRIVE_ENCODER_LEFT);
 			targetMovementDist = targetMovementDist - Math.abs(Motors.motorDriveLeft1.getEncPosition());
 			
-			SmartDashboard.putNumber("targetMovementDist (findPegDist)", targetMovementDist);
+			//SmartDashboard.putNumber("targetMovementDist (findPegDist)", targetMovementDist);
 			findPegDist = true;
 		}
 		
 		if (findPegDist && !movePegDist)
 		{
-			Motors.gearHold1.setAngle(Motors.lGearPrimeAngle);
-			Motors.gearHold2.setAngle(Motors.rGearPrimeAngle);
+			Motors.gearHold1.set(Motors.lGearPrimeAngle);
+			Motors.gearHold2.set(Motors.rGearPrimeAngle);
 			Drivetrain.moveToDistance(targetMovementDist);
 			double distanceDelta = targetMovementDist + /*-*/ ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			SmartDashboard.putNumber("Distance Delta 2-21-7", distanceDelta);
+			//SmartDashboard.putNumber("Distance Delta 2-21-7", distanceDelta);
 			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
 			{
 				movePegDist = true;
@@ -415,7 +419,7 @@ public class Auto
 			else
 				degreesToRotate = -120;
 			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
-			SmartDashboard.putNumber("Target angle", targetAngle);
+			//SmartDashboard.putNumber("Target angle", targetAngle);
 			
 			findValues = true;
 		}
@@ -436,7 +440,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnAngle = true;
 		}
@@ -538,7 +542,7 @@ public class Auto
 			{
 				degreesToRotate = 136.25;
 			}
-			Motors.fuelStop.setAngle(Motors.fuelOpenAngle);
+			Motors.fuelStop.set(Motors.fuelCloseAngle);
 			findValues=true;
 		}
 		
@@ -548,66 +552,120 @@ public class Auto
 			{
 				timer.start();
 				startTime = timer.get();
+				Fuel.autoShoot();
 			}
-			Fuel.autoShoot();
-			if(Math.abs(startTime - timer.get()) >= 1.0)
+			if(Math.abs(startTime - timer.get()) >= 13.0)
 			{
-				Motors.fuelStop.setAngle(Motors.fuelOpenAngle);	
+				Drivetrain.drive(0, 0);
 			}
-			if(Math.abs(startTime - timer.get()) >= 2.5)
+			else if (Math.abs(startTime - timer.get()) >= 11.0)
 			{
-				Motors.motorIntake.set(Motors.intakePower);	
+				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
 			}
-			if (Math.abs(startTime - timer.get()) >= 7.0)
+			else if(Math.abs(startTime - timer.get()) >= 9.0)
+			{
+				if (red)
+				{
+					Drivetrain.rotateCCW(Motors.AUTO_ALIGN_POWER);
+				}
+				else if(!red)
+				{
+					Drivetrain.rotateCW(Motors.AUTO_ALIGN_POWER);
+				}
+			}
+			else if (Math.abs(startTime - timer.get()) >= 8.0)
+			{
+				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+			}
+			else if (Math.abs(startTime - timer.get()) >= 7.0)
 			{
 				Fuel.stopShoot();
 				Motors.motorIntake.set(0);
-				Motors.fuelStop.setAngle(Motors.fuelCloseAngle);
-				shootHigh = true;
+				Motors.fuelStop.set(Motors.fuelCloseAngle);
+				//shootHigh = true;
+//				timer.reset();
+//				timer.stop();
+			}
+			else if(Math.abs(startTime - timer.get()) >= 2.5)
+			{
+				Motors.motorIntake.set(Motors.intakePower * .5);	
+			}
+			else if(Math.abs(startTime - timer.get()) >= 1.0)
+			{
+				Motors.fuelStop.set(Motors.fuelOpenAngle);	
 			}
 		}
 		
-		if(shootHigh && !moveAway)
+		/*if(shootHigh && !moveAway)
 		{
-			Drivetrain.moveToDistance(targetRetreatDistance);
-			double distanceDelta = targetRetreatDistance - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			SmartDashboard.putNumber("L Encoder Easy", Motors.motorDriveLeft1.getEncPosition());
-			SmartDashboard.putNumber("R Encoder Easy", Motors.motorDriveRight1.getEncPosition());
-			SmartDashboard.putNumber("Distance delta", distanceDelta);
-			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
+//			Drivetrain.moveToDistance(targetRetreatDistance);
+//			double distanceDelta = targetRetreatDistance - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+//					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+//			//SmartDashboard.putNumber("L Encoder Easy", Motors.motorDriveLeft1.getEncPosition());
+//			//SmartDashboard.putNumber("R Encoder Easy", Motors.motorDriveRight1.getEncPosition());
+//			//SmartDashboard.putNumber("Distance delta", distanceDelta);
+//			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
+//			{
+//				Drivetrain.drive(0, 0);
+//				moveAway = true;
+//			}
+			if (Math.abs(startTime - timer.get()) >= 8.0)
 			{
-				Drivetrain.drive(0, 0);
-				moveAway = true;
+				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+			}
+			else
+			{
+				moveAway=true;
 			}
 		}
 		
 		if(moveAway && !turnToLimit)
 		{
-			double driveDistance = Dimensions.DIST_TO_BASELINE+Dimensions.FIVE_FEET;
-			targetMovementDist = driveDistance*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT+((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			
-			Drivetrain.turnToAngle(targetAngle);
-			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			if (Math.abs(angleDelta) < AngleThreshold)
+//			double driveDistance = Dimensions.DIST_TO_BASELINE+Dimensions.FIVE_FEET;
+//			targetMovementDist = driveDistance*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT+((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+//					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+//			
+//			Drivetrain.turnToAngle(targetAngle);
+//			double angleDelta = targetAngle - Sensors.navX.getYaw();
+//			if (Math.abs(angleDelta) < AngleThreshold)
+//			{
+//				Drivetrain.drive(0, 0);
+//				turnToLimit = true;
+//			}
+			if (red && Math.abs(startTime - timer.get()) >= 9.0)
 			{
-				Drivetrain.drive(0, 0);
-				turnToLimit = true;
+				Drivetrain.rotateCCW(Motors.AUTO_ALIGN_POWER);
+			}
+			else if(!red && Math.abs(startTime - timer.get()) >= 9.0)
+			{
+				Drivetrain.rotateCW(Motors.AUTO_ALIGN_POWER);
+			}
+			else
+			{
+				turnToLimit=true;
 			}
 		}
 		
 		if(turnToLimit && !moveToLimit)
 		{
-			Drivetrain.moveToDistance(targetMovementDist);
-			double distanceDelta = targetMovementDist - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
+//			Drivetrain.moveToDistance(targetMovementDist);
+//			double distanceDelta = targetMovementDist - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+//					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+//			if ((distanceDelta > -EncoderDistanceThreshold) && (distanceDelta < EncoderDistanceThreshold))
+//			{
+//				Drivetrain.drive(0, 0);
+//				moveToLimit = true;
+//			}
+			if (Math.abs(startTime - timer.get()) >= 11.0)
+			{
+				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+			}
+			else
 			{
 				Drivetrain.drive(0, 0);
-				moveToLimit = true;
+				moveToLimit=true;
 			}
-		}
+		}*/
 	}
 	
 	public static void highBoiler(boolean red)
@@ -646,7 +704,7 @@ public class Auto
 			else
 				degreesToRotate = -136.25;
 			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
-			SmartDashboard.putNumber("Target angle", targetAngle);
+			//SmartDashboard.putNumber("Target angle", targetAngle);
 			
 			findBoilerValues = true;
 		}
@@ -666,7 +724,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnBoilerAngle = true;
 		}
@@ -726,7 +784,7 @@ public class Auto
 			else
 				degreesToRotate = -136.25;
 			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
-			SmartDashboard.putNumber("Target angle", targetAngle);
+			//SmartDashboard.putNumber("Target angle", targetAngle);
 			
 			findBoilerValues = true;
 		}
@@ -749,7 +807,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnBoilerAngle = true;
 		}
@@ -860,7 +918,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToAlliance = true;
 		}
@@ -885,7 +943,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnBoilerAngle = true;
 		}
@@ -982,7 +1040,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToAlliance = true;
 		}
@@ -1011,7 +1069,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnBoilerAngle = true;
 		}
@@ -1102,7 +1160,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToBarrier = true;
 		}
@@ -1164,7 +1222,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToBarrier = true;
 		}
@@ -1229,7 +1287,7 @@ public class Auto
 		{
 			Drivetrain.turnToAngle(targetAngle);
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToLimit = true;
 		}
@@ -1274,16 +1332,16 @@ public class Auto
 		}
 		if ( !movePegDist) // TODO Replace with PID
 		{
-			Motors.gearHold1.setAngle(Motors.rGearPrimeAngle);
-			Motors.gearHold2.setAngle(Motors.lGearPrimeAngle);
+			Motors.gearHold1.set(Motors.rGearPrimeAngle);
+			Motors.gearHold2.set(Motors.lGearPrimeAngle);
 			SmartDashboard.putDouble("Left Enc", Motors.motorDriveLeft1.getEncPosition());
 			SmartDashboard.putDouble("right Enc", Motors.motorDriveRight1.getEncPosition());
 			SmartDashboard.putDouble("average enc", ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0));
 			double distanceDeltaLeft = targetMovementDist + ((Math.abs(Motors.motorDriveLeft1.getEncPosition())));
 			double distanceDeltaRight = targetMovementDistRight + Math.abs(Motors.motorDriveRight1.getEncPosition());
-			SmartDashboard.putNumber("distance delta left", distanceDeltaLeft);
-			SmartDashboard.putNumber("distance delta right", distanceDeltaRight);
+			//SmartDashboard.putNumber("distance delta left", distanceDeltaLeft);
+			//SmartDashboard.putNumber("distance delta right", distanceDeltaRight);
 			if (Drivetrain.moveToDistancePID(targetMovementDist, targetMovementDistRight))
 			{
 				PIDValues.rightDrive1.disable();
@@ -1408,7 +1466,7 @@ public class Auto
 			else
 				degreesToRotate = -110;
 			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
-			SmartDashboard.putNumber("Target angle", targetAngle);
+			//SmartDashboard.putNumber("Target angle", targetAngle);
 			
 			findValues = true;
 		}
@@ -1432,7 +1490,7 @@ public class Auto
 				Drivetrain.rotateRight(targetAngle);
 			}
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnAngle = true;
 		}
@@ -1520,7 +1578,7 @@ public class Auto
 			else
 				degreesToRotate = -136.25;
 			targetAngle = Sensors.navX.getYaw() + degreesToRotate;
-			SmartDashboard.putNumber("Target angle", targetAngle);
+			//SmartDashboard.putNumber("Target angle", targetAngle);
 			
 			findBoilerValues = true;
 		}
@@ -1546,7 +1604,7 @@ public class Auto
 				Drivetrain.rotateRight(targetAngle);
 			}
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnBoilerAngle = true;
 		}
@@ -1676,7 +1734,7 @@ public class Auto
 				Drivetrain.rotateLeft( -targetAngle);
 			}
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToAlliance = true;
 		}
@@ -1707,7 +1765,7 @@ public class Auto
 				Drivetrain.rotateLeft( -targetAngle);
 			}
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnBoilerAngle = true;
 		}
@@ -1817,7 +1875,7 @@ public class Auto
 				Drivetrain.rotateLeft( -targetAngle);
 			}
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToBarrier = true;
 		}
@@ -1883,7 +1941,7 @@ public class Auto
 				Drivetrain.rotateLeft( -targetAngle);
 			}
 			double angleDelta = targetAngle - Sensors.navX.getYaw();
-			SmartDashboard.putNumber("Remaining degrees", angleDelta);
+			//SmartDashboard.putNumber("Remaining degrees", angleDelta);
 			if (Math.abs(angleDelta) < AngleThreshold)
 				turnToLimit = true;
 		}
