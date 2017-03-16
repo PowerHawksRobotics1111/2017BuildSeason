@@ -52,6 +52,11 @@ public class Motors
 	
 	public static final double shooterSpeed = 0;// TODO Shooter Velocity
 	
+	public static final double DRIVE_ACCELERATION = .05;//every 20 milliseconds
+	public static final double DRIVE_DEACCELERATION = .05;
+	public static final double DRIVE_SPEED_LIMIT = .5;
+
+	
 	public static void motorInit()
 	{
 		motorDriveRight1 = new CANTalon(RIGHT_DRIVE_1);

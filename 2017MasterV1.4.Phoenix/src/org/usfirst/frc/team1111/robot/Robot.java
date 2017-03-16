@@ -246,11 +246,11 @@ public class Robot extends IterativeRobot
 		// TODO Second Control Mode - Left Stick for Forward/Backwards, Right
 		// stick for rotation
 		// if ( !overrideDriverJoysticks)
-		Drivetrain.drive( -Joysticks.joyDrive.getRawAxis(3), Joysticks.joyDrive.getRawAxis(1));
 		// if ((Math.abs(Joysticks.joyDrive.getRawAxis(0)) +
 		// Math.abs(Joysticks.joyDrive.getRawAxis(2))) >= .3)
 		// System.out.println("Mark! You can't go sideways...");
 		Operator.operate();
+		Operator.drive();
 		updateDashboard();
 		//SmartDashboard.putNumber("Left Encoder", Motors.motorDriveLeft1.getEncPosition());
 		//SmartDashboard.putNumber("Right Encoder", Motors.motorDriveRight1.getEncPosition());

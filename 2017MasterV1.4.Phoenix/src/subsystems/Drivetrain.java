@@ -12,6 +12,11 @@ public class Drivetrain
 	static double AngleThreshold = 2;
 	static double EncoderDistanceThreshold = 3000.0;
 	static boolean PIDDone = false;
+	static boolean retrievedAngle = false;
+	static double initialAngle;
+	static double maxCorrection = 0.3;
+	static double lMotor = 0;
+	static double rMotor = 0;
 	
 	// Actual bot
 	public static void drive(double left, double right)
@@ -63,14 +68,35 @@ public class Drivetrain
 	
 	public static void moveToDistance(double targetDistance)
 	{
+		lMotorPower = 0.6;
+		rMotorPower = 0.6;
+				
+		if(!retrievedAngle)
+		{
+			initialAngle = Sensors.navX.getYaw();
+			retrievedAngle = true;
+		}
+		double angleDelta = Math.abs(initialAngle-Sensors.navX.getYaw());
+		double correctionValue = (angleDelta/180.0)*maxCorrection;
 		double distanceDelta = targetDistance + ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 				+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+		if(Sensors.navX.getYaw()<initialAngle)
+		{
+			lMotorPower+=correctionValue;
+		}
+		else if(Sensors.navX.getYaw()>initialAngle)
+		{
+			rMotorPower+=correctionValue;
+		}
 		if (distanceDelta > EncoderDistanceThreshold)
-			drive( -.6, .6); // -.6 -.6 for practice
+			drive( -lMotorPower, rMotorPower);
 		else if (distanceDelta < -EncoderDistanceThreshold)
-			drive(.6, -.6); // .6, .6 for practice
+			drive(lMotorPower, -rMotorPower);
 		else
+		{
 			drive(0, 0);
+			retrievedAngle = false;	
+		}
 	}
 	
 	public static boolean moveToDistancePID(double targetDistance)

@@ -486,7 +486,7 @@ public class Auto
 			
 			if (startTime == -1.0)
 			{
-				timer.start();// TODO Implement new wait code everywhere
+				timer.start();
 				startTime = timer.get();
 			}
 			
@@ -582,9 +582,6 @@ public class Auto
 				Fuel.stopShoot();
 				Motors.motorIntake.set(0);
 				Motors.fuelStop.set(Motors.fuelCloseAngle);
-				//shootHigh = true;
-//				timer.reset();
-//				timer.stop();
 			}
 			else if(Math.abs(startTime - timer.get()) >= 2.5)
 			{
@@ -596,8 +593,8 @@ public class Auto
 			}
 		}
 		
-		/*if(shootHigh && !moveAway)
-		{
+//		if(shootHigh && !moveAway)
+//		{
 //			Drivetrain.moveToDistance(targetRetreatDistance);
 //			double distanceDelta = targetRetreatDistance - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 //					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
@@ -609,18 +606,18 @@ public class Auto
 //				Drivetrain.drive(0, 0);
 //				moveAway = true;
 //			}
-			if (Math.abs(startTime - timer.get()) >= 8.0)
-			{
-				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
-			}
-			else
-			{
-				moveAway=true;
-			}
-		}
-		
-		if(moveAway && !turnToLimit)
-		{
+//			if (Math.abs(startTime - timer.get()) >= 8.0)
+//			{
+//				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+//			}
+//			else
+//			{
+//				moveAway=true;
+//			}
+//		}
+//		
+//		if(moveAway && !turnToLimit)
+//		{
 //			double driveDistance = Dimensions.DIST_TO_BASELINE+Dimensions.FIVE_FEET;
 //			targetMovementDist = driveDistance*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT+((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 //					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
@@ -632,22 +629,22 @@ public class Auto
 //				Drivetrain.drive(0, 0);
 //				turnToLimit = true;
 //			}
-			if (red && Math.abs(startTime - timer.get()) >= 9.0)
-			{
-				Drivetrain.rotateCCW(Motors.AUTO_ALIGN_POWER);
-			}
-			else if(!red && Math.abs(startTime - timer.get()) >= 9.0)
-			{
-				Drivetrain.rotateCW(Motors.AUTO_ALIGN_POWER);
-			}
-			else
-			{
-				turnToLimit=true;
-			}
-		}
-		
-		if(turnToLimit && !moveToLimit)
-		{
+//			if (red && Math.abs(startTime - timer.get()) >= 9.0)
+//			{
+//				Drivetrain.rotateCCW(Motors.AUTO_ALIGN_POWER);
+//			}
+//			else if(!red && Math.abs(startTime - timer.get()) >= 9.0)
+//			{
+//				Drivetrain.rotateCW(Motors.AUTO_ALIGN_POWER);
+//			}
+//			else
+//			{
+//				turnToLimit=true;
+//			}
+//		}
+//		
+//		if(turnToLimit && !moveToLimit)
+//		{
 //			Drivetrain.moveToDistance(targetMovementDist);
 //			double distanceDelta = targetMovementDist - ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 //					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
@@ -656,16 +653,16 @@ public class Auto
 //				Drivetrain.drive(0, 0);
 //				moveToLimit = true;
 //			}
-			if (Math.abs(startTime - timer.get()) >= 11.0)
-			{
-				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
-			}
-			else
-			{
-				Drivetrain.drive(0, 0);
-				moveToLimit=true;
-			}
-		}*/
+//			if (Math.abs(startTime - timer.get()) >= 11.0)
+//			{
+//				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+//			}
+//			else
+//			{
+//				Drivetrain.drive(0, 0);
+//				moveToLimit=true;
+//			}
+//		}
 	}
 	
 	public static void highBoiler(boolean red)
@@ -865,7 +862,7 @@ public class Auto
 		// calculate values (distances)
 		if (doPegSide && !calculateValues)
 		{
-			double retreatDistance = 40; // TODO arbitrary value
+			double retreatDistance = 40;
 			targetRetreatDistance = ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0)
 					+ (retreatDistance * Sensors.INCHES_TO_DRIVE_ENCODER_LEFT);
@@ -989,7 +986,7 @@ public class Auto
 		// calculate values (distances)
 		if (doPegSide && !calculateValues)
 		{
-			double retreatDistance = 40; // TODO arbitrary value
+			double retreatDistance = 40;
 			
 			double distFromAllianceWall = (Dimensions.PEGBASE_ALLIANCE_WALL_TRIANGLE_HYPOTENUSE - retreatDistance)
 					* Math.cos(Math.PI / 3.0);
@@ -1252,7 +1249,7 @@ public class Auto
 		
 		if (doPegSide && !calculateValues)
 		{
-			double retreatDistance = 40;// TODO arbitrary value
+			double retreatDistance = 40;
 			targetRetreatDistance = ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 					+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0)
 					+ (retreatDistance * Sensors.INCHES_TO_DRIVE_ENCODER_LEFT);

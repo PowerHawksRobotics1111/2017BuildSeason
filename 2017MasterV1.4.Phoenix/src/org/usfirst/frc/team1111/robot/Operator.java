@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1111.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Relay.Value;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import subsystems.Drivetrain;
@@ -10,13 +9,13 @@ import variables.Joysticks;
 import variables.Motors;
 import variables.Sensors;
 
-public class Operator
-{
-	static Timer timer = new Timer(); 
+public class Operator {
+	
+	static Timer timer = new Timer();
 	
 	static boolean hanging = false;
 	static boolean pistonRan = false;
-	
+
 	/**
 	 * This is the master method, it is called periodically to check inputs and
 	 * apply commands to the robot accordingly
@@ -31,17 +30,17 @@ public class Operator
 			intake();// Press and hold
 			shoot();// press and hold
 			hang();// toggle
-//			placeGear();// Press to release gear
-//			pistons();
+			// placeGear();// Press to release gear
+			// pistons();
 			gearPiston();
 			resetnavX();
 		}
 		// Driver method
 		// autoAlignPeg();// Press and hold
 	}
-	
+
 	static boolean aligned = false;
-	
+
 	static void autoAlignPeg()
 	{
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driverPegAlign))
@@ -59,12 +58,88 @@ public class Operator
 			// align without cancel.
 		}
 	}
+
+	static double leftDriveSetPoint = 0.0;
+	static double rightDriveSetPoint = 0.0;
+
+	static double left = 0.0;
+	static double right = 0.0;
+
+	static double driveModifier;
 	
+	static void drive()
+	{
+
+		
+
+		// Left
+		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driveBoost))
+			driveModifier = 1.0;
+		else
+			driveModifier = Motors.DRIVE_SPEED_LIMIT;
+		
+		left = Joysticks.joyDrive.getRawAxis(3) * driveModifier;
+		right = Joysticks.joyDrive.getRawAxis(1) * driveModifier;
+
+		if(Joysticks.joyDrive.getRawButton(Joysticks.LEFT_TRIGGER))
+		{
+			leftDriveSetPoint = left;
+			rightDriveSetPoint = right;
+		}else if (left < 0)
+		{
+			if (leftDriveSetPoint >= (left + Motors.DRIVE_ACCELERATION))
+				leftDriveSetPoint -= Motors.DRIVE_ACCELERATION;
+			else if (leftDriveSetPoint <= (left - Motors.DRIVE_DEACCELERATION))
+				leftDriveSetPoint += Motors.DRIVE_DEACCELERATION;
+			else
+				leftDriveSetPoint = left;
+		} else if (left > 0)
+		{
+			if (leftDriveSetPoint <= (left - Motors.DRIVE_ACCELERATION))
+				leftDriveSetPoint += Motors.DRIVE_ACCELERATION;
+			else if (leftDriveSetPoint > (left + Motors.DRIVE_DEACCELERATION))
+				leftDriveSetPoint -= Motors.DRIVE_DEACCELERATION;
+			else
+				leftDriveSetPoint = left;
+		} else if (leftDriveSetPoint <= -Motors.DRIVE_DEACCELERATION)
+			leftDriveSetPoint += Motors.DRIVE_DEACCELERATION;
+		else if (leftDriveSetPoint >= Motors.DRIVE_DEACCELERATION)
+			leftDriveSetPoint -= Motors.DRIVE_DEACCELERATION;
+		else
+			leftDriveSetPoint = 0.0;
+
+		// Right
+		if (!Joysticks.joyDrive.getRawButton(Joysticks.LEFT_TRIGGER)&&right < 0)
+		{
+			if (rightDriveSetPoint >= (right + Motors.DRIVE_ACCELERATION))
+				rightDriveSetPoint -= Motors.DRIVE_ACCELERATION;
+			else if (rightDriveSetPoint <= (right - Motors.DRIVE_DEACCELERATION))
+				rightDriveSetPoint += Motors.DRIVE_DEACCELERATION;
+			else
+				rightDriveSetPoint = right;
+		} else if (right > 0)
+		{
+			if (rightDriveSetPoint <= (right - Motors.DRIVE_ACCELERATION))
+				rightDriveSetPoint += Motors.DRIVE_ACCELERATION;
+			else if (rightDriveSetPoint > (right + Motors.DRIVE_DEACCELERATION))
+				rightDriveSetPoint -= Motors.DRIVE_DEACCELERATION;
+			else
+				rightDriveSetPoint = right;
+		} else if (rightDriveSetPoint <= -Motors.DRIVE_DEACCELERATION)
+			rightDriveSetPoint += Motors.DRIVE_DEACCELERATION;
+		else if (rightDriveSetPoint >= Motors.DRIVE_DEACCELERATION)
+			rightDriveSetPoint -= Motors.DRIVE_DEACCELERATION;
+		else
+			rightDriveSetPoint = 0.0;
+		
+		Drivetrain.drive( -leftDriveSetPoint, rightDriveSetPoint);
+	}
+
 	static void hang()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.hang))
 			hanging = true;
-		if(Joysticks.joyOp.getPOV() == 270) //270 is left
+		if (Joysticks.joyOp.getPOV() == 270) // 270 is left
 			Motors.motorHang.set(Motors.hangPower);
 		else if (Joysticks.joyOp.getRawButton(Joysticks.X))
 			Motors.motorHang.set(.3);
@@ -74,7 +149,7 @@ public class Operator
 		{
 			SmartDashboard.putDouble("Climbing Amperate", Motors.motorHang.getOutputCurrent());
 			Motors.motorHang.set(Motors.hangPower);
-			
+
 			if (Motors.motorHang.getOutputCurrent() >= Motors.hangStopCurrent)
 				hanging = false;
 		} else
@@ -84,28 +159,29 @@ public class Operator
 			Motors.motorHang.set(0.0);
 		}
 	}
-	
+
 	static double startShootTime = -1.0;
+	
 	static void shoot()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.shootButton))
 		{
-			if(startShootTime <0)
+			if (startShootTime < 0)
 				startShootTime = Timer.getMatchTime();
-			
-			if(Math.abs(startShootTime - Timer.getMatchTime()) <.5)
+
+			if (Math.abs(startShootTime - Timer.getMatchTime()) < .5)
 			{
 				Motors.motorTopShooter.set( -Motors.shooterVoltage);
 				Motors.motorLowShooter.set( -Motors.shooterVoltage);
 				Motors.fuelStop.setAngle(Motors.fuelCloseAngle);
-			}else
+			} else
 			{
 				Motors.motorTopShooter.set( -Motors.shooterVoltage);
 				Motors.motorLowShooter.set( -Motors.shooterVoltage);
 				Motors.fuelStop.setAngle(Motors.fuelOpenAngle);
 				Motors.motorAgitator.set(Motors.agitationPower);
 			}
-			
+
 			// Motors.sh
 		} else
 		{
@@ -114,10 +190,10 @@ public class Operator
 			Motors.motorTopShooter.set(0.0);
 			Motors.motorLowShooter.set(0.0);
 			startShootTime = -1.0;
-			
+
 		}
 	}
-	
+
 	static void intake()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.intakeButton))
@@ -127,9 +203,9 @@ public class Operator
 			Motors.motorIntake.set(Motors.outtakePower);
 		else
 			Motors.motorIntake.set(0.0);
-		
+
 	}
-	
+
 	static void placeGear()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearPrimer))
@@ -138,11 +214,10 @@ public class Operator
 			timer.stop();
 			Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
 			Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
-		}
-		else if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearRelease)
+		} else if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearRelease)
 				|| Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driveGearRelease))
 		{
-			if (!pistonRan)
+			if ( !pistonRan)
 			{
 				Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
 				Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
@@ -150,7 +225,7 @@ public class Operator
 				Motors.pushPiston2.set(DoubleSolenoid.Value.kForward);
 				timer.reset();
 			}
-			if (timer.get()>= .5)
+			if (timer.get() >= .5)
 			{
 				pistonRan = false;
 				Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
@@ -172,82 +247,76 @@ public class Operator
 			Robot.gearReleased = false;
 		}
 	}
-	
+
 	static double startTime = -1.0;
-	
+
 	static void gearPiston()
 	{
-		if(Joysticks.joyOp.getPOV() == Joysticks.Buttons.pForward)
+		if (Joysticks.joyOp.getPOV() == Joysticks.Buttons.pForward)
 		{
 			Motors.pushPiston1.set(DoubleSolenoid.Value.kForward);
 			Motors.pushPiston2.set(DoubleSolenoid.Value.kForward);
-		}
-		else
-			if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearPrimer))
+		} else if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearPrimer))
+		{
+			System.out.println("WHY");
+			timer.reset();
+			timer.stop();
+			Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
+			Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
+		} else if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearRelease)
+				|| Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driveGearRelease))
+		{
+			System.out.println("WHY");
+			
+			Robot.gearReleased = true;
+			
+			if (startTime < 0)
+				startTime = Timer.getMatchTime();
+			
+			if ((startTime - Timer.getMatchTime()) <= 1)
 			{
-				System.out.println("WHY");
-				timer.reset();
-				timer.stop();
 				Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
-				Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
-			}else if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearRelease)
-					|| Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driveGearRelease))
-			{
-				System.out.println("WHY");
-				
-				Robot.gearReleased = true;
-				
-				if(startTime < 0)
-					startTime = Timer.getMatchTime();
-				
-				if( startTime - Timer.getMatchTime()<= 1)
-				{
-					Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
-					Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
-				}else
-				{
-					Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
-					Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
-					Motors.pushPiston1.set(DoubleSolenoid.Value.kForward);
-					Motors.pushPiston2.set(DoubleSolenoid.Value.kForward);
-				}
-				
+				Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
 			} else
 			{
-				Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
-				Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
-				Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
-				Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
-				Robot.gearReleased = false;
-				startTime = -1.0;
+				Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
+				Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
+				Motors.pushPiston1.set(DoubleSolenoid.Value.kForward);
+				Motors.pushPiston2.set(DoubleSolenoid.Value.kForward);
 			}
+			
+		} else
+		{
+			Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
+			Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
+			Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
+			Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
+			Robot.gearReleased = false;
+			startTime = -1.0;
+		}
 	}
-	
+
 	static void pistons()
 	{
-		if(Joysticks.joyOp.getRawButton(Joysticks.Buttons.pForward))
+		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.pForward))
 		{
 			Motors.pushPiston1.set(DoubleSolenoid.Value.kForward);
 			Motors.pushPiston2.set(DoubleSolenoid.Value.kForward);
-		}
-		else
+		} else
 		{
 			Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
 			Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
 		}
 	}
+	
 	static void resetnavX()
 	{
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.navXReset))
-		{
 			Sensors.navX.reset();
-		}
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.navXYawReset))
-		{
 			Sensors.navX.zeroYaw();
-		}
 	}
-	
+
 	/**
 	 * Check each function, and if it is being pressed, disable it, stop motors,
 	 * reset to standard, finished state.

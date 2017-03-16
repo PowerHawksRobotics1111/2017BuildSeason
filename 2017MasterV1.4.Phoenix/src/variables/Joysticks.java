@@ -38,5 +38,7 @@ public class Joysticks
 		
 		public static final int pForward = DPAD_UP;
 		
+		public static final int driveBoost = LEFT_BUMPER ;
+		
 	}
 }
