@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Joysticks
 {
-	
 	private final static int DRIVER_PORT = 0, OPERATOR_PORT = 1;
 	
 	// Joystick Button Labels

@@ -1,10 +1,8 @@
 package org.usfirst.frc.team1111.robot;
 
-import com.ctre.CANTalon.TalonControlMode;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,14 +25,11 @@ public class Robot extends IterativeRobot
 	
 	String autoSelected;
 	SendableChooser chooser;
-	final String keyZonePeg = "Key Zone Peg", keyZonePegCustom = "Key Zone Peg (Custom)",
-			retrievalPeg = "Retrieval Zone Peg", retrievalPegCustom = "Retrieval Zone Peg (Custom)",
-			pegAndBoiler = "Key Zone Peg and Boiler", pegAndBoilerCustom = "Key Zone Peg and Boiler (Custom)",
-			pegAndHopper = "Key Zone Peg and Hopper", pegAndHopperCustom = "Key Zone Peg and Hopper (Custom)",
-			highBoiler = "High Goal", highBoilerCustom = "High Goal (Custom)", pegMid = "Middle Peg", base = "Baseline",
-			nothing = "Nothing", pegMidPID = "Peg Mid PID", easyBoiler = "Easy Boiler Start";
+	final String keyZonePeg = "Key Zone Peg", retrievalPeg = "Retrieval Zone Peg",
+			pegAndBoiler = "Key Zone Peg and Boiler", pegAndHopper = "Key Zone Peg and Hopper",
+			highBoiler = "High Goal", pegMid = "Middle Peg", base = "Baseline", nothing = "Nothing",
+			easyBoiler = "Easy Boiler Start", pegAndPrep = "Peg and Prepare";
 	public static boolean isRed;
-	public static boolean overrideDriverJoysticks = false;
 	public static boolean gearReleased = false;
 	
 	/**
@@ -45,38 +40,30 @@ public class Robot extends IterativeRobot
 	public void robotInit()
 	{
 		
-		CameraServer.getInstance().startAutomaticCapture(0);
-		CameraServer.getInstance().startAutomaticCapture("cam0", "/dev/video0");
-
-
+//		CameraServer.getInstance().startAutomaticCapture(0);
+//		CameraServer.getInstance().startAutomaticCapture("cam0", "/dev/video0");
+		
 		chooser = new SendableChooser();
 		
 		chooser.addObject(base, base);
 		chooser.addObject(pegMid, pegMid);
 		chooser.addObject(keyZonePeg, keyZonePeg);
-		chooser.addObject(keyZonePegCustom, keyZonePegCustom);
 		chooser.addObject(retrievalPeg, retrievalPeg);
-		chooser.addObject(retrievalPegCustom, retrievalPegCustom);
 		chooser.addObject(pegAndBoiler, pegAndBoiler);
-		chooser.addObject(pegAndBoilerCustom, pegAndBoilerCustom);
 		chooser.addObject(pegAndHopper, pegAndHopper);
-		chooser.addObject(pegAndHopperCustom, pegAndHopperCustom);
 		chooser.addObject(highBoiler, highBoiler);
-		chooser.addObject(highBoilerCustom, highBoilerCustom);
 		chooser.addDefault(nothing, nothing);
-		chooser.addObject(pegMidPID, pegMidPID);
+		// chooser.addObject(pegMidPID, pegMidPID);
 		chooser.addObject(easyBoiler, easyBoiler);
+		chooser.addObject(pegAndPrep, pegAndPrep);
 		
 		SmartDashboard.putData("Auto Selection", chooser);
-		
-		// Makes the box for custom distance auto methods
-		//SmartDashboard.putNumber("Custom Distance from Corner (Inches)", 0.0);
 		
 		updateDashboard();
 		Sensors.sensorsInit();
 		Motors.motorInit();
 		
-		isRed =(m_ds.getAlliance() == Alliance.Red);
+		isRed = (m_ds.getAlliance() == Alliance.Red);
 		
 		Motors.motorDriveLeft1.setEncPosition(0);
 		Motors.motorDriveRight1.setEncPosition(0);
@@ -131,11 +118,11 @@ public class Robot extends IterativeRobot
 		
 		Motors.fuelStop.setAngle(Motors.fuelCloseAngle);
 		
-//		Motors.lightRing1.changeControlMode(TalonControlMode.Voltage);
-//		Motors.lightRing2.changeControlMode(TalonControlMode.Voltage);
-
-//		Sensors.LEDRelay1.set(Relay.Value.kOn);
-//		Sensors.LEDRelay2.set(Relay.Value.kOn);
+		// Motors.lightRing1.changeControlMode(TalonControlMode.Voltage);
+		// Motors.lightRing2.changeControlMode(TalonControlMode.Voltage);
+		
+		// Sensors.LEDRelay1.set(Relay.Value.kOn);
+		// Sensors.LEDRelay2.set(Relay.Value.kOn);
 		Sensors.navX.reset();
 		Sensors.navX.zeroYaw();
 	}
@@ -146,79 +133,67 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic()
 	{
-		//SmartDashboard.putNumber("NavX Yaw (SIDEPEG TESTING)", Sensors.navX.getYaw());
+		// SmartDashboard.putNumber("NavX Yaw (SIDEPEG TESTING)",
+		// Sensors.navX.getYaw());
 		boolean keyzoneStart = true;
 		autoSelected = (String) chooser.getSelected();
 		// System.out.println(autoSelected); TODO uncomment in final
 		SmartDashboard.putNumber("Encoder Testing", Motors.motorDriveLeft1.getPosition());
 		switch (autoSelected)
 		{
-		default:
-			// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
-			// 5ft (60 in) past baseline)
-			// TODO Move this into Auto.java, add in PID Control
-			double distanceDelta = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
-					- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-							+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			if (distanceDelta > 0)
-				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
-			else
-				Drivetrain.drive(0, 0);
-			break;
-		case base:
-			// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
-			// 5ft (60 in) past baseline)
-			// TODO Move this into Auto.java, add in PID Control
-			double distanceDeltaB = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
-					- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-							+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-			if (distanceDeltaB > 0)
-				Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
-			else
-				Drivetrain.drive(0, 0);
-			break;
+			default:
+				// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
+				// 5ft (60 in) past baseline)
+				// TODO Move this into Auto.java, add in PID Control
+				double distanceDelta = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)
+						* Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
+						- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+								+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+				if (distanceDelta > 0)
+					Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+				else
+					Drivetrain.drive(0, 0);
+				break;
+			case base:
+				// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
+				// 5ft (60 in) past baseline)
+				// TODO Move this into Auto.java, add in PID Control
+				double distanceDeltaB = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)
+						* Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
+						- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+								+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+				if (distanceDeltaB > 0)
+					Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
+				else
+					Drivetrain.drive(0, 0);
+				break;
 			case pegMid:
 				Auto.pegMiddle();
 				break;
 			case keyZonePeg:
 				Auto.pegSide(keyzoneStart, isRed);
 				break;
-			case keyZonePegCustom:
-				Auto.pegSide(SmartDashboard.getNumber("Custom Distance from Corner (Inches)"), keyzoneStart, isRed);
-				break;
 			case retrievalPeg:
 				keyzoneStart = false;
 				Auto.pegSide(keyzoneStart, isRed);
 				break;
-			case retrievalPegCustom:
-				keyzoneStart = false;
-				Auto.pegSide(SmartDashboard.getNumber("Custom Distance from Corner (Inches)"), keyzoneStart, isRed);
-				break;
 			case highBoiler:
 				Auto.highBoiler(isRed);
-				break;
-			case highBoilerCustom:
-				Auto.highBoiler(SmartDashboard.getNumber("Custom Distance from Corner (Inches)"), isRed);
 				break;
 			case pegAndBoiler:
 				Auto.pegAndBoiler(isRed);
 				break;
-			case pegAndBoilerCustom:
-				Auto.pegAndBoiler(SmartDashboard.getNumber("Custom Distance from Corner (Inches)"), isRed);
-				break;
 			case pegAndHopper:
 				Auto.pegAndHopper(isRed);
 				break;
-			case pegAndHopperCustom:
-				Auto.pegAndHopper(SmartDashboard.getNumber("Custom Distance from Corner (Inches)"), isRed);
-				break;
 			case nothing:
 				break;
-			case pegMidPID:
-				Auto.pegMiddlePID();
-				break;
+			
 			case easyBoiler:
 				Auto.highBoilerEasy(isRed);
+				break;
+			case pegAndPrep:
+				Auto.pegAndPrep(isRed);
 				break;
 		}
 	}
@@ -233,8 +208,8 @@ public class Robot extends IterativeRobot
 		
 		Sensors.LEDRelay1.set(Relay.Value.kOn);
 		
-//		Motors.lightRing1.set(0);
-//		Motors.lightRing2.set(0);
+		// Motors.lightRing1.set(0);
+		// Motors.lightRing2.set(0);
 	}
 	
 	/**
@@ -250,13 +225,18 @@ public class Robot extends IterativeRobot
 		// Math.abs(Joysticks.joyDrive.getRawAxis(2))) >= .3)
 		// System.out.println("Mark! You can't go sideways...");
 		Operator.operate();
-		Operator.drive();
+//		Operator.drive();
+		Drivetrain.drive( -Joysticks.joyDrive.getRawAxis(3), Joysticks.joyDrive.getRawAxis(1));
 		updateDashboard();
-		//SmartDashboard.putNumber("Left Encoder", Motors.motorDriveLeft1.getEncPosition());
-		//SmartDashboard.putNumber("Right Encoder", Motors.motorDriveRight1.getEncPosition());
-		//SmartDashboard.putNumber("Encoder average", ((Math.abs(Motors.motorDriveLeft1.getEncPosition()) + Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0));
+		// SmartDashboard.putNumber("Left Encoder",
+		// Motors.motorDriveLeft1.getEncPosition());
+		// SmartDashboard.putNumber("Right Encoder",
+		// Motors.motorDriveRight1.getEncPosition());
+		// SmartDashboard.putNumber("Encoder average",
+		// ((Math.abs(Motors.motorDriveLeft1.getEncPosition()) +
+		// Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0));
 		
-		//SmartDashboard.putNumber("NavX Yaw", Sensors.navX.getYaw());
+		// SmartDashboard.putNumber("NavX Yaw", Sensors.navX.getYaw());
 	}
 	
 	/**

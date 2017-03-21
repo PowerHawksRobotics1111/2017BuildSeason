@@ -66,28 +66,71 @@ public class Drivetrain
 			drive(0, 0);
 	}
 	
+//	public static void moveToDistance(double targetDistance)
+//	{
+//		double lMotorPower = 0.6;
+//		double rMotorPower = 0.6;
+//				
+////		if(!retrievedAngle)
+////		{
+////			initialAngle = Sensors.navX.getYaw();
+////			retrievedAngle = true;
+////		}
+////		double angleDelta = Math.abs(initialAngle-Sensors.navX.getYaw());
+////		double correctionValue = (2*angleDelta/180.0)*maxCorrection;
+//		double distanceDelta = targetDistance + ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+//				+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+////		if(Sensors.navX.getYaw()<initialAngle)
+////		{
+////			rMotorPower+=correctionValue;
+////		}
+////		else if(Sensors.navX.getYaw()>initialAngle)
+////		{
+////			lMotorPower+=correctionValue;
+////		}
+//		if (distanceDelta > EncoderDistanceThreshold)
+//			drive( -lMotorPower, rMotorPower);
+//		else if (distanceDelta < -EncoderDistanceThreshold)
+//			drive(lMotorPower, -rMotorPower);
+//		else
+//		{
+//			drive(0, 0);
+//			retrievedAngle = false;	
+//		}
+//	}
+	
 	public static void moveToDistance(double targetDistance)
 	{
-		lMotorPower = 0.6;
-		rMotorPower = 0.6;
+		double lMotorPower = 0.4;
+		double rMotorPower = 0.4;
 				
 		if(!retrievedAngle)
 		{
 			initialAngle = Sensors.navX.getYaw();
 			retrievedAngle = true;
 		}
-		double angleDelta = Math.abs(initialAngle-Sensors.navX.getYaw());
-		double correctionValue = (angleDelta/180.0)*maxCorrection;
+//		double angleDelta = Math.abs(initialAngle-Sensors.navX.getYaw());
+//		double correctionValue = (2*angleDelta/180.0)*maxCorrection;
+		
 		double distanceDelta = targetDistance + ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 				+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-		if(Sensors.navX.getYaw()<initialAngle)
-		{
-			lMotorPower+=correctionValue;
-		}
-		else if(Sensors.navX.getYaw()>initialAngle)
-		{
-			rMotorPower+=correctionValue;
-		}
+//		if(Sensors.navX.getYaw()<initialAngle-5)
+//		{
+//			rMotorPower+=0.1;
+//		}
+//		else if(Sensors.navX.getYaw()>initialAngle+5)
+//		{
+//			lMotorPower+=0.1;
+//		}
+		
+//		if(Sensors.navX.getYaw()<initialAngle)
+//		{
+//			rMotorPower+=correctionValue;
+//		}
+//		else if(Sensors.navX.getYaw()>initialAngle)
+//		{
+//			lMotorPower+=correctionValue;
+//		}
 		if (distanceDelta > EncoderDistanceThreshold)
 			drive( -lMotorPower, rMotorPower);
 		else if (distanceDelta < -EncoderDistanceThreshold)
@@ -98,6 +141,7 @@ public class Drivetrain
 			retrievedAngle = false;	
 		}
 	}
+
 	
 	public static boolean moveToDistancePID(double targetDistance)
 	{
