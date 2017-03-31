@@ -26,6 +26,7 @@ public class Joysticks
 		public static final int driveGearRelease = RIGHT_BUMPER;
 		public static final int hang = Y;
 		public static final int gearPrimer = LEFT_BUMPER;
+		public static final int recordButton = LEFT_TRIGGER;
 		
 		public static final int driverPegAlign = RIGHT_BUMPER;
 		

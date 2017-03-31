@@ -1,5 +1,10 @@
 package org.usfirst.frc.team1111.robot;
 
+import java.io.File;
+import java.io.IOException;
+
+import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -7,6 +12,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import subsystems.BTMain;
 import subsystems.Drivetrain;
 import variables.Dimensions;
 import variables.Joysticks;
@@ -22,7 +28,7 @@ import variables.Sensors;
  */
 public class Robot extends IterativeRobot
 {
-	
+	BTMain recorder;
 	String autoSelected;
 	SendableChooser chooser;
 	final String keyZonePeg = "Key Zone Peg", retrievalPeg = "Retrieval Zone Peg",
@@ -45,6 +51,13 @@ public class Robot extends IterativeRobot
 		
 		chooser = new SendableChooser();
 		
+		File btmain = new File("/home/lvuser/auto");
+//		FileNameExtensionFilter fileNameExtension = new FileNameExtensionFilter("csv");
+		for(File file: btmain.listFiles()){
+//			if(fileNameExtension.accept(file)){
+				chooser.addObject(file.getName(), file.getName());
+//			}
+		}
 		chooser.addObject(base, base);
 		chooser.addObject(pegMid, pegMid);
 		chooser.addObject(keyZonePeg, keyZonePeg);
@@ -62,7 +75,8 @@ public class Robot extends IterativeRobot
 		updateDashboard();
 		Sensors.sensorsInit();
 		Motors.motorInit();
-		
+		SmartDashboard.putString("Custom auto code name", "");
+
 		isRed = (m_ds.getAlliance() == Alliance.Red);
 		
 		Motors.motorDriveLeft1.setEncPosition(0);
@@ -108,6 +122,11 @@ public class Robot extends IterativeRobot
 		Motors.motorDriveRight1.enableBrakeMode(true);
 		Motors.motorDriveRight2.enableBrakeMode(true);
 		
+		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+		
 		Motors.motorDriveLeft1.setEncPosition(0);
 		Motors.motorDriveLeft2.setEncPosition(0);
 		Motors.motorDriveRight1.setEncPosition(0);
@@ -137,6 +156,12 @@ public class Robot extends IterativeRobot
 		// Sensors.navX.getYaw());
 		boolean keyzoneStart = true;
 		autoSelected = (String) chooser.getSelected();
+		if(recorder == null)
+		{
+			System.out.println("AH");
+			recorder = new BTMain(autoSelected, true);
+		}
+		recorder.autonomous();
 		// System.out.println(autoSelected); TODO uncomment in final
 		SmartDashboard.putNumber("Encoder Testing", Motors.motorDriveLeft1.getPosition());
 		switch (autoSelected)
@@ -218,6 +243,8 @@ public class Robot extends IterativeRobot
 	@Override
 	public void teleopPeriodic()
 	{
+		if(recorder == null)
+			recorder = new BTMain(SmartDashboard.getString("Custom auto code name") + ".csv", false);
 		// TODO Second Control Mode - Left Stick for Forward/Backwards, Right
 		// stick for rotation
 		// if ( !overrideDriverJoysticks)
@@ -227,6 +254,14 @@ public class Robot extends IterativeRobot
 		Operator.operate();
 //		Operator.drive();
 		Drivetrain.drive( -Joysticks.joyDrive.getRawAxis(3), Joysticks.joyDrive.getRawAxis(1));
+		try 
+		{
+			recorder.operatorControl();
+		} catch (IOException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		updateDashboard();
 		// SmartDashboard.putNumber("Left Encoder",
 		// Motors.motorDriveLeft1.getEncPosition());
@@ -266,6 +301,7 @@ public class Robot extends IterativeRobot
 	@Override
 	public void disabledPeriodic()
 	{
+		recorder = null;
 		Motors.motorDriveLeft1.enableBrakeMode(true);
 		Motors.motorDriveLeft2.enableBrakeMode(true);
 		Motors.motorDriveRight1.enableBrakeMode(true);
