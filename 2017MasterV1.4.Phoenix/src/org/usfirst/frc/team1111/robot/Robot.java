@@ -167,18 +167,6 @@ public class Robot extends IterativeRobot
 		switch (autoSelected)
 		{
 			default:
-				// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
-				// 5ft (60 in) past baseline)
-				// TODO Move this into Auto.java, add in PID Control
-				double distanceDelta = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)
-						* Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
-						- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-								+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-				if (distanceDelta > 0)
-					Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
-				else
-					Drivetrain.drive(0, 0);
-				break;
 			case base:
 				// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
 				// 5ft (60 in) past baseline)
