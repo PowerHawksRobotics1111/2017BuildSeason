@@ -9,13 +9,14 @@ import variables.Joysticks;
 import variables.Motors;
 import variables.Sensors;
 
-public class Operator {
+public class Operator
+{
 	
 	static Timer timer = new Timer();
 	
 	static boolean hanging = false;
 	static boolean pistonRan = false;
-
+	
 	/**
 	 * This is the master method, it is called periodically to check inputs and
 	 * apply commands to the robot accordingly
@@ -38,7 +39,7 @@ public class Operator {
 		// Driver method
 		// autoAlignPeg();// Press and hold
 	}
-
+	
 	static double leftDriveSetPoint = 0.0;
 	static double rightDriveSetPoint = 0.0;
 	
@@ -46,12 +47,10 @@ public class Operator {
 	static double right = 0.0;
 	
 	static double driveModifier;
-
+	
 	static void drive()
 	{
-
 		
-
 		// Left
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driveBoost))
 			driveModifier = 1.0;
@@ -60,12 +59,12 @@ public class Operator {
 		
 		left = Joysticks.joyDrive.getRawAxis(3) * driveModifier;
 		right = Joysticks.joyDrive.getRawAxis(1) * driveModifier;
-
-		if(Joysticks.joyDrive.getRawButton(Joysticks.LEFT_TRIGGER))
+		
+		if (Joysticks.joyDrive.getRawButton(Joysticks.LEFT_TRIGGER))
 		{
 			leftDriveSetPoint = left;
 			rightDriveSetPoint = right;
-		}else if (left < 0)
+		} else if (left < 0)
 		{
 			if (leftDriveSetPoint >= (left + Motors.DRIVE_ACCELERATION))
 				leftDriveSetPoint -= Motors.DRIVE_ACCELERATION;
@@ -87,9 +86,9 @@ public class Operator {
 			leftDriveSetPoint -= Motors.DRIVE_DEACCELERATION;
 		else
 			leftDriveSetPoint = 0.0;
-
+		
 		// Right
-		if (!Joysticks.joyDrive.getRawButton(Joysticks.LEFT_TRIGGER)&&right < 0)
+		if ( !Joysticks.joyDrive.getRawButton(Joysticks.LEFT_TRIGGER) && right < 0)
 		{
 			if (rightDriveSetPoint >= (right + Motors.DRIVE_ACCELERATION))
 				rightDriveSetPoint -= Motors.DRIVE_ACCELERATION;
@@ -114,9 +113,9 @@ public class Operator {
 		
 		Drivetrain.drive( -leftDriveSetPoint, rightDriveSetPoint);
 	}
-
+	
 	static boolean aligned = false;
-
+	
 	static void autoAlignPeg()
 	{
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.driverPegAlign))
@@ -134,7 +133,7 @@ public class Operator {
 			// align without cancel.
 		}
 	}
-
+	
 	static void hang()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.hang))
@@ -147,7 +146,7 @@ public class Operator {
 		{
 			SmartDashboard.putDouble("Climbing Amperate", Motors.motorHang.getOutputCurrent());
 			Motors.motorHang.set(Motors.hangPower);
-
+			
 			if (Motors.motorHang.getOutputCurrent() >= Motors.hangStopCurrent)
 				hanging = false;
 		} else
@@ -157,7 +156,7 @@ public class Operator {
 			Motors.motorHang.set(0.0);
 		}
 	}
-
+	
 	static void shoot()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.shootButton))
@@ -173,10 +172,10 @@ public class Operator {
 			Motors.motorAgitator.set(0.0);
 			Motors.motorTopShooter.set(0.0);
 			Motors.motorLowShooter.set(0.0);
-
+			
 		}
 	}
-
+	
 	static void intake()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.intakeButton))
@@ -186,9 +185,9 @@ public class Operator {
 			Motors.motorIntake.set(Motors.outtakePower);
 		else
 			Motors.motorIntake.set(0.0);
-
+		
 	}
-
+	
 	static void placeGear()
 	{
 		if (Joysticks.joyOp.getRawButton(Joysticks.Buttons.gearPrimer))
@@ -234,6 +233,7 @@ public class Operator {
 		}
 	}
 
+	
 	static double startTime = -1.0;
 	
 	static void gearPiston()
@@ -272,16 +272,23 @@ public class Operator {
 			}
 			
 		} else
-		{
-			Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
-			Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
+		{			
+			if (variables.Joysticks.joyOp.getRawAxis(2) <= 0)
+			{
+				variables.Motors.gearHold1.setAngle(variables.Motors.lGearDropdownAngle);
+			} else
+			{
+				variables.Motors.gearHold1.setAngle(variables.Motors.lGearDropdownAngle
+						- Math.abs((variables.Motors.lGearStopdownAngle - variables.Motors.lGearDropdownAngle)
+								* variables.Joysticks.joyOp.getRawAxis(2)));
+			}
 			Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
 			Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
 			Robot.gearReleased = false;
 			startTime = -1.0;
 		}
 	}
-
+	
 	static void pistons()
 	{
 		if (Joysticks.joyOp.getPOV() == Joysticks.Buttons.pForward)
@@ -294,7 +301,7 @@ public class Operator {
 			Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
 		}
 	}
-
+	
 	static void resetnavX()
 	{
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.navXReset))
@@ -302,7 +309,7 @@ public class Operator {
 		if (Joysticks.joyDrive.getRawButton(Joysticks.Buttons.navXYawReset))
 			Sensors.navX.zeroYaw();
 	}
-
+	
 	/**
 	 * Check each function, and if it is being pressed, disable it, stop motors,
 	 * reset to standard, finished state.

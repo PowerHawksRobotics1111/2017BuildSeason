@@ -28,15 +28,15 @@ public class Motors
 			INTAKE = 51, HANG = 62, TOP_SHOOT = 58, LOW_SHOOT = 37, LIGHT_RING1 = -1, LIGHT_RING2 = -1;
 	
 	public static final double shooterVoltage = 12.5 * .73, agitationPower = 1, intakePower = -1, outtakePower = 1,
-			hangPower = 1, hangStopCurrent = 80;
+			hangPower = 1, hangStopCurrent = 50;
 	
 	// public static final double hangStopCurrent;
 	public static final double fuelOpenAngle = 90.0;
 	public static final double fuelCloseAngle = 0.0;
 	
-	public static final double lGearStopdownAngle = 10;// 23.3 //17.8 //10 p
+	public static final double lGearStopdownAngle = 0;// 23.3 //17.8 //10 p
 														// //17.6
-	public static final double lGearDropdownAngle = 0;// 17.8 //23.3 //0 p //0
+	public static final double lGearDropdownAngle = 10;// 17.8 //23.3 //0 p //0
 	public static final double lGearPrimeAngle = 6; // 8
 	
 	public static final double rGearStopdownAngle = 7.2;// 21.5 /7.2 //7.2p

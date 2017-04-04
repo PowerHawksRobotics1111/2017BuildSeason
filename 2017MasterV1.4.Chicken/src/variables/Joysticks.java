@@ -29,6 +29,7 @@ public class Joysticks
 		public static final int gearPrimer = LEFT_BUMPER;
 		
 		public static final int driverPegAlign = RIGHT_BUMPER;
+		public static final int recordButton = LEFT_BUMPER;
 		
 		public static final int override1 = START;
 		public static final int override2 = BACK;
