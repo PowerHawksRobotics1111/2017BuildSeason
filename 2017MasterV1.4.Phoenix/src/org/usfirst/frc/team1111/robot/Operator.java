@@ -254,8 +254,25 @@ public class Operator {
 					Motors.gearHold1.setAngle(Motors.lGearPrimeAngle);
 					Motors.gearHold2.setAngle(Motors.rGearPrimeAngle);
 				} else {
-					Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
-					Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
+					if (Joysticks.joyOp.getRawAxis(2) <= 0)
+					{
+						Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
+					} else
+					{
+						Motors.gearHold1.setAngle(Motors.lGearDropdownAngle
+								- Math.abs((Motors.lGearStopdownAngle - Motors.lGearDropdownAngle)
+										* Joysticks.joyOp.getRawAxis(2)));
+					}
+					
+					if (Joysticks.joyOp.getRawAxis(4) <= 0)
+					{
+						Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
+					} else
+					{
+						Motors.gearHold2.setAngle(Motors.rGearDropdownAngle
+								- Math.abs((Motors.rGearStopdownAngle - Motors.rGearDropdownAngle)
+										* Joysticks.joyOp.getRawAxis(4)));
+					}
 				}
 				Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);
 				Motors.pushPiston2.set(DoubleSolenoid.Value.kReverse);
