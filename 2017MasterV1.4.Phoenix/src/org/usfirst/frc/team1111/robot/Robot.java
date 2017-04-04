@@ -30,11 +30,13 @@ public class Robot extends IterativeRobot
 {
 	BTMain recorder;
 	String autoSelected;
+	String autoModeSelected;
+	SendableChooser autoMode;
 	SendableChooser chooser;
 	final String keyZonePeg = "Key Zone Peg", retrievalPeg = "Retrieval Zone Peg",
 			pegAndBoiler = "Key Zone Peg and Boiler", pegAndHopper = "Key Zone Peg and Hopper",
 			highBoiler = "High Goal", pegMid = "Middle Peg", base = "Baseline", nothing = "Nothing",
-			easyBoiler = "Easy Boiler Start", pegAndPrep = "Peg and Prepare";
+			easyBoiler = "Easy Boiler Start", pegAndPrep = "Peg and Prepare", codeAuto = "Code Auto", fileAuto = "File Auto";;
 	public static boolean isRed;
 	public static boolean gearReleased = false;
 	
@@ -50,7 +52,8 @@ public class Robot extends IterativeRobot
 //		CameraServer.getInstance().startAutomaticCapture("cam0", "/dev/video0");
 		
 		chooser = new SendableChooser();
-		
+		autoMode = new SendableChooser();
+
 		File btmain = new File("/home/lvuser/auto");
 //		FileNameExtensionFilter fileNameExtension = new FileNameExtensionFilter("csv");
 		for(File file: btmain.listFiles()){
@@ -58,18 +61,28 @@ public class Robot extends IterativeRobot
 				chooser.addObject(file.getName(), file.getName());
 //			}
 		}
-		chooser.addObject(base, base);
-		chooser.addObject(pegMid, pegMid);
-		chooser.addObject(keyZonePeg, keyZonePeg);
-		chooser.addObject(retrievalPeg, retrievalPeg);
-		chooser.addObject(pegAndBoiler, pegAndBoiler);
-		chooser.addObject(pegAndHopper, pegAndHopper);
-		chooser.addObject(highBoiler, highBoiler);
-		chooser.addDefault(nothing, nothing);
-		// chooser.addObject(pegMidPID, pegMidPID);
-		chooser.addObject(easyBoiler, easyBoiler);
-		chooser.addObject(pegAndPrep, pegAndPrep);
 		
+		
+		chooser.addObject(base, base);
+		chooser.addDefault(pegMid, pegMid);
+//		chooser.addObject(keyZonePeg, keyZonePeg);
+//		chooser.addObject(keyZonePegCustom, keyZonePegCustom);
+//		chooser.addObject(retrievalPeg, retrievalPeg);
+//		chooser.addObject(retrievalPegCustom, retrievalPegCustom);
+//		chooser.addObject(pegAndBoiler, pegAndBoiler);
+//		chooser.addObject(pegAndBoilerCustom, pegAndBoilerCustom);
+//		chooser.addObject(pegAndHopper, pegAndHopper);
+//		chooser.addObject(pegAndHopperCustom, pegAndHopperCustom);
+//		chooser.addObject(highBoiler, highBoiler);
+//		chooser.addObject(highBoilerCustom, highBoilerCustom);
+		chooser.addObject(nothing, nothing);
+//		chooser.addObject(pegMidPID, pegMidPID);
+//		chooser.addObject(easyBoiler, easyBoiler);
+		
+		autoMode.addDefault(codeAuto, codeAuto);
+		autoMode.addObject(fileAuto, fileAuto);
+		
+		SmartDashboard.putData("Auto Mode", autoMode);
 		SmartDashboard.putData("Auto Selection", chooser);
 		
 		updateDashboard();
@@ -116,7 +129,8 @@ public class Robot extends IterativeRobot
 	public void autonomousInit()
 	{
 		autoSelected = (String) chooser.getSelected();
-		
+		autoModeSelected = (String) autoMode.getSelected();
+
 		Motors.motorDriveLeft1.enableBrakeMode(true);
 		Motors.motorDriveLeft2.enableBrakeMode(true);
 		Motors.motorDriveRight1.enableBrakeMode(true);
@@ -152,62 +166,87 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic()
 	{
-		// SmartDashboard.putNumber("NavX Yaw (SIDEPEG TESTING)",
-		// Sensors.navX.getYaw());
-		boolean keyzoneStart = true;
+		autoModeSelected = (String) autoMode.getSelected();
 		autoSelected = (String) chooser.getSelected();
-		if(recorder == null)
+		boolean keyzoneStart = true;
+		switch(autoModeSelected)
 		{
-			System.out.println("AH");
-			recorder = new BTMain(autoSelected, true);
-		}
-		recorder.autonomous();
-		// System.out.println(autoSelected); TODO uncomment in final
-		SmartDashboard.putNumber("Encoder Testing", Motors.motorDriveLeft1.getPosition());
-		switch (autoSelected)
+		case fileAuto:
 		{
-			default:
-			case base:
-				// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
-				// 5ft (60 in) past baseline)
-				// TODO Move this into Auto.java, add in PID Control
-				double distanceDeltaB = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)
-						* Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
-						- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
-								+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
-				if (distanceDeltaB > 0)
-					Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
-				else
-					Drivetrain.drive(0, 0);
-				break;
-			case pegMid:
-				Auto.pegMiddle();
-				break;
-			case keyZonePeg:
-				Auto.pegSide(keyzoneStart, isRed);
-				break;
-			case retrievalPeg:
-				keyzoneStart = false;
-				Auto.pegSide(keyzoneStart, isRed);
-				break;
-			case highBoiler:
-				Auto.highBoiler(isRed);
-				break;
-			case pegAndBoiler:
-				Auto.pegAndBoiler(isRed);
-				break;
-			case pegAndHopper:
-				Auto.pegAndHopper(isRed);
-				break;
-			case nothing:
-				break;
+			SmartDashboard.putNumber("NavX Yaw (SIDEPEG TESTING)", Sensors.navX.getYaw());
+			autoSelected = (String) chooser.getSelected();
+			if(recorder == null)
+			{
+				System.out.println("AH");
+				recorder = new BTMain(autoSelected, true);
+			}
+			recorder.autonomous();
 			
-			case easyBoiler:
-				Auto.highBoilerEasy(isRed);
-				break;
-			case pegAndPrep:
-				Auto.pegAndPrep(isRed);
-				break;
+			System.out.println(autoSelected);// TODO uncomment in final
+			break;
+		}
+		default:
+		case codeAuto:
+		{
+			switch (autoSelected)
+			{
+				default:
+////					recorder.autonomous();
+//					// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
+//					// 5ft (60 in) past baseline)
+//					// TODO Move this into Auto.java, add in PID Control
+//					double distanceDelta = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
+//							- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+//									+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+//					if (distanceDelta > 0)
+//						Drivetrain.drive(Motors.AUTO_ALIGN_POWER, Motors.AUTO_ALIGN_POWER);
+//					else
+//						Drivetrain.drive(0, 0);
+//					break;
+				case base:
+					// Drivetrain.moveToDistance(Dimensions.DIST_TO_BASELINE+60);//Goes
+					// 5ft (60 in) past baseline)
+					// TODO Move this into Auto.java, add in PID Control
+					double distanceDeltaB = ((Dimensions.DIST_TO_BASELINE + Dimensions.FIVE_FEET)*Sensors.INCHES_TO_DRIVE_ENCODER_LEFT)
+							- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
+									+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
+					if (distanceDeltaB > 0)
+						Drivetrain.drive(Motors.AUTO_ALIGN_POWER, Motors.AUTO_ALIGN_POWER);
+					else
+						Drivetrain.drive(0, 0);
+					break;
+				case pegMid:
+					Auto.pegMiddle();
+					break;
+				case keyZonePeg:
+					Auto.pegSide(keyzoneStart, isRed);
+					break;
+
+				case retrievalPeg:
+					keyzoneStart = false;
+					Auto.pegSide(keyzoneStart, isRed);
+					break;
+				case highBoiler:
+					Auto.highBoiler(isRed);
+					break;
+
+				case pegAndBoiler:
+					Auto.pegAndBoiler(isRed);
+					break;
+
+				case pegAndHopper:
+					Auto.pegAndHopper(isRed);
+					break;
+
+				case nothing:
+					break;
+
+				case easyBoiler:
+					Auto.highBoilerEasy(isRed);
+					break;
+			}
+			
+		}
 		}
 	}
 	
