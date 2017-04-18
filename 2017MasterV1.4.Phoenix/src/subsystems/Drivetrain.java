@@ -101,8 +101,8 @@ public class Drivetrain
 	
 	public static void moveToDistance(double targetDistance)
 	{
-		double lMotorPower = 0.4;
-		double rMotorPower = 0.4;
+		double lMotorPower = 0.25;
+		double rMotorPower = 0.25;
 				
 		if(!retrievedAngle)
 		{

@@ -79,13 +79,12 @@ public class Robot extends IterativeRobot
 //		chooser.addObject(pegMidPID, pegMidPID);
 //		chooser.addObject(easyBoiler, easyBoiler);
 		
-		autoMode.addDefault(codeAuto, codeAuto);
+//		autoMode.addDefault(codeAuto, codeAuto);
 		autoMode.addObject(fileAuto, fileAuto);
 		
 		SmartDashboard.putData("Auto Mode", autoMode);
 		SmartDashboard.putData("Auto Selection", chooser);
 		
-		updateDashboard();
 		Sensors.sensorsInit();
 		Motors.motorInit();
 		SmartDashboard.putString("Custom auto code name", "");
@@ -94,7 +93,8 @@ public class Robot extends IterativeRobot
 		
 		Motors.motorDriveLeft1.setEncPosition(0);
 		Motors.motorDriveRight1.setEncPosition(0);
-		
+				updateDashboard();
+
 	}
 	
 	/**
@@ -105,6 +105,9 @@ public class Robot extends IterativeRobot
 	public void updateDashboard()
 	{
 		SmartDashboard.putBoolean("Gear Released?", gearReleased);
+		
+		SmartDashboard.putNumber("1 Servo", Motors.gearHold1.getAngle());
+		SmartDashboard.putNumber("2 Servo", Motors.gearHold2.getAngle());
 		
 		// //SmartDashboard.putNumber("Shooter Speed",
 		// Motors.motorShooter.getEncVelocity());
@@ -136,10 +139,10 @@ public class Robot extends IterativeRobot
 		Motors.motorDriveRight1.enableBrakeMode(true);
 		Motors.motorDriveRight2.enableBrakeMode(true);
 		
-		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
-		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
-		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
-		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+//		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+//		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+//		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
+//		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.Voltage);
 		
 		Motors.motorDriveLeft1.setEncPosition(0);
 		Motors.motorDriveLeft2.setEncPosition(0);
@@ -169,7 +172,7 @@ public class Robot extends IterativeRobot
 		autoModeSelected = (String) autoMode.getSelected();
 		autoSelected = (String) chooser.getSelected();
 		boolean keyzoneStart = true;
-		switch(autoModeSelected)
+		/*switch(autoModeSelected)
 		{
 		case fileAuto:
 		{
@@ -187,7 +190,7 @@ public class Robot extends IterativeRobot
 		}
 		default:
 		case codeAuto:
-		{
+		{*/
 			switch (autoSelected)
 			{
 				default:
@@ -211,7 +214,7 @@ public class Robot extends IterativeRobot
 							- ((Math.abs(Motors.motorDriveLeft1.getEncPosition())
 									+ Math.abs(Motors.motorDriveRight1.getEncPosition())) / 2.0);
 					if (distanceDeltaB > 0)
-						Drivetrain.drive(Motors.AUTO_ALIGN_POWER, Motors.AUTO_ALIGN_POWER);
+						Drivetrain.drive(Motors.AUTO_ALIGN_POWER, -Motors.AUTO_ALIGN_POWER);
 					else
 						Drivetrain.drive(0, 0);
 					break;
@@ -246,8 +249,8 @@ public class Robot extends IterativeRobot
 					break;
 			}
 			
-		}
-		}
+//		}
+//		}
 	}
 	
 	@Override
@@ -257,6 +260,11 @@ public class Robot extends IterativeRobot
 		Motors.motorDriveLeft2.enableBrakeMode(false);
 		Motors.motorDriveRight1.enableBrakeMode(false);
 		Motors.motorDriveRight2.enableBrakeMode(false);
+		
+		Motors.motorDriveLeft1.changeControlMode(TalonControlMode.PercentVbus);
+		Motors.motorDriveLeft2.changeControlMode(TalonControlMode.PercentVbus);
+		Motors.motorDriveRight1.changeControlMode(TalonControlMode.PercentVbus);
+		Motors.motorDriveRight2.changeControlMode(TalonControlMode.PercentVbus);
 		
 		Sensors.LEDRelay1.set(Relay.Value.kOn);
 		
@@ -270,8 +278,8 @@ public class Robot extends IterativeRobot
 	@Override
 	public void teleopPeriodic()
 	{
-		if(recorder == null)
-			recorder = new BTMain(SmartDashboard.getString("Custom auto code name") + ".csv", false);
+//		if(recorder == null)
+//			recorder = new BTMain(SmartDashboard.getString("Custom auto code name") + ".csv", false);
 		// TODO Second Control Mode - Left Stick for Forward/Backwards, Right
 		// stick for rotation
 		// if ( !overrideDriverJoysticks)
@@ -281,14 +289,14 @@ public class Robot extends IterativeRobot
 		Operator.operate();
 //		Operator.drive();
 		Drivetrain.drive( -Joysticks.joyDrive.getRawAxis(3), Joysticks.joyDrive.getRawAxis(1));
-		try 
-		{
-			recorder.operatorControl();
-		} catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try 
+//		{
+//			recorder.operatorControl();
+//		} catch (IOException e) 
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		updateDashboard();
 		// SmartDashboard.putNumber("Left Encoder",
 		// Motors.motorDriveLeft1.getEncPosition());

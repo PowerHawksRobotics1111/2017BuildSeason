@@ -256,22 +256,22 @@ public class Operator {
 				} else {
 					if (Joysticks.joyOp.getRawAxis(2) <= 0)
 					{
-						Motors.gearHold1.setAngle(Motors.lGearDropdownAngle);
+						Motors.gearHold1.setAngle(Motors.lGearStopdownAngle);
 					} else
 					{
-						Motors.gearHold1.setAngle(Motors.lGearDropdownAngle
+						Motors.gearHold1.setAngle(Motors.lGearStopdownAngle
 								- Math.abs((Motors.lGearStopdownAngle - Motors.lGearDropdownAngle)
 										* Joysticks.joyOp.getRawAxis(2)));
 					}
 					
-					if (Joysticks.joyOp.getRawAxis(4) <= 0)
+					if (Joysticks.joyOp.getRawAxis(0) >= 0)
 					{
-						Motors.gearHold2.setAngle(Motors.rGearDropdownAngle);
+						Motors.gearHold2.setAngle(Motors.rGearStopdownAngle);
 					} else
 					{
-						Motors.gearHold2.setAngle(Motors.rGearDropdownAngle
-								- Math.abs((Motors.rGearStopdownAngle - Motors.rGearDropdownAngle)
-										* Joysticks.joyOp.getRawAxis(4)));
+						Motors.gearHold2.setAngle(Motors.rGearStopdownAngle
+								+ Math.abs((Motors.rGearStopdownAngle - Motors.rGearDropdownAngle)
+										* Joysticks.joyOp.getRawAxis(0)));
 					}
 				}
 				Motors.pushPiston1.set(DoubleSolenoid.Value.kReverse);

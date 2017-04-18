@@ -36,17 +36,17 @@ public class Motors
 	public static final double fuelOpenAngle = 120;//120
 	public static final double fuelCloseAngle = 31;//61
 	
-	public static final double lGearStopdownAngle = 17.6;// 10 p
+	public static final double lGearStopdownAngle = 0;// 10 p
 															// //17.6
-	public static final double lGearDropdownAngle = 0;// 0 p
+	public static final double lGearDropdownAngle = 17.6;// 0 p
 														// //0
 	public static final double lGearPrimeAngle = 15; // 8 //6p
 	
-	public static final double rGearStopdownAngle = 8.5;// 7.2p
+	public static final double rGearStopdownAngle = 161;// 7.2p
 															// //21.4
-	public static final double rGearDropdownAngle = 20; // 14.5p
+	public static final double rGearDropdownAngle = 109; // 14.5p
 															// //35.2
-	public static final double rGearPrimeAngle = 12; // 12 p //28
+	public static final double rGearPrimeAngle = 131; // 12 p //28
 	
 	public final static double AUTO_ALIGN_POWER = .25;
 	
@@ -86,8 +86,8 @@ public class Motors
 		motorHang2 = new CANTalon(HANG2);
 		motorHang.enableBrakeMode(true);
 		
-		gearHold1 = new Servo(0);
-		gearHold2 = new Servo(1);
+		gearHold1 = new Servo(1);
+		gearHold2 = new Servo(0);
 		
 		fuelStop = new Servo(2);
 		
